@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moments Match — Analysis Animation Spec</title>
+<style>
+  /* ── Base (mirrors app variables) ── */
+  :root {
+    --text:    #0f172a;
+    --muted:   #64748b;
+    --faint:   #94a3b8;
+    --surface: #fff;
+    --border:  #e2e8f0;
+    --accent:  #e11d8f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8fafc; color: var(--text); }
+
+  /* ── Page layout ── */
+  .page { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+  .page-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .page-sub   { font-size: 13px; color: var(--muted); margin-bottom: 36px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 40px; }
+
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .card-head { padding: 14px 18px; border-bottom: 1px solid var(--border); }
+  .card-type  { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .7px; color: var(--faint); margin-bottom: 3px; }
+  .card-name  { font-size: 14px; font-weight: 600; color: var(--text); }
+  .card-body  { padding: 18px; }
+
+  /* ── Dark frame (same layout as current video frame) ── */
+  .dark-frame {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;   /* 16:9 */
+    border-radius: 10px;
+    overflow: hidden;
+    background: #111;
+    margin-bottom: 14px;
+  }
+  .dark-frame-inner { position: absolute; inset: 0; }
+
+  /* Scan line — same style as current app */
+  .scan-line {
+    position: absolute; left: 0; right: 0; height: 2px;
+    background: rgba(237, 0, 94, .7);
+    box-shadow: 0 0 10px 2px rgba(237, 0, 94, .35);
+  }
+
+  /* Bottom overlay + meta */
+  .frame-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.65) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .frame-meta {
+    position: absolute; bottom: 10px; left: 12px; right: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .meta-l { font-size: 10px; color: rgba(255,255,255,.75); font-variant-numeric: tabular-nums; letter-spacing: .5px; }
+  .meta-r { font-size: 10px; color: rgba(255,255,255,.5); }
+
+  /* ── Brief content (text animation) ── */
+  .brief-words {
+    padding: 16px 14px;
+    font-size: 11px;
+    line-height: 1.8;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'SF Mono', 'Fira Mono', 'Courier New', monospace;
+  }
+  .word { color: rgba(255,255,255,.25); transition: color .2s; }
+  .word.active { color: rgba(255,255,255,.88); }
+  .word.done   { color: rgba(255,255,255,.4); }
+
+  /* ── Doc content (skeleton animation) ── */
+  .doc-lines {
+    padding: 14px 16px;
+    height: 100%;
+    display: flex; flex-direction: column; gap: 7px;
+  }
+  .dl {
+    height: 5px; border-radius: 2px;
+    background: rgba(255,255,255,.12);
+    transition: background .3s;
+  }
+  .dl.h  { height: 8px; background: rgba(255,255,255,.18); }
+  .dl.lit { background: rgba(255,255,255,.5); }
+
+  /* ── Progress ── */
+  .prog-label { font-size: 12px; color: var(--muted); min-height: 18px; margin-bottom: 10px; }
+  .prog-track { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 7px; overflow: hidden; }
+  .prog-fill  { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #ED005E, #e11d8f); transition: width .4s linear; }
+  .prog-pct   { font-size: 11px; color: var(--faint); text-align: right; }
+
+  /* ── Controls ── */
+  .controls { display: flex; justify-content: center; gap: 12px; }
+  .btn-replay {
+    font-size: 13px; padding: 8px 24px; border-radius: 8px; border: 1px solid var(--border);
+    background: #fff; color: var(--text); cursor: pointer; font-family: inherit;
+  }
+  .btn-replay:hover { background: #f8fafc; }
+
+  /* ── Spec notes ── */
+  .spec { margin-top: 40px; padding: 24px; background: #fff; border: 1px solid var(--border); border-radius: 14px; }
+  .spec h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+  .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .spec-col h3 { font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .5px; }
+  .spec-col ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .spec-col li { font-size: 12px; color: var(--muted); padding-left: 12px; position: relative; }
+  .spec-col li::before { content: '–'; position: absolute; left: 0; color: var(--faint); }
+  code { font-family: 'SF Mono', monospace; font-size: 11px; background: #f1f5f9; padding: 1px 5px; border-radius: 4px; color: #0f172a; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-title">Moments Match — Analysis Animations</div>
+  <div class="page-sub">Two processing animations: one for free-text briefs, one for uploaded documents (PDF/Doc). Video files keep the existing frame animation.</div>
+
+  <div class="grid">
+
+    <!-- BRIEF -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-type">asset_type: text / brief</div>
+        <div class="card-name" id="brief-filename">Q2 Brand Awareness — Spring</div>
+      </div>
+      <div class="card-body">
+
+        <div class="dark-frame">
+          <div class="dark-frame-inner">
+            <div class="brief-words" id="brief-words-container">
+              <!-- words injected by JS -->
+            </div>
+            <div class="scan-line" id="brief-scan" style="top:0"></div>
+            <div class="frame-overlay">
+              <div class="frame-meta">
+                <span class="meta-l" id="brief-wordcount">Word 1 / 1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="prog-label" id="brief-step">Reading brief…</div>
+        <div class="prog-track"><div class="prog-fill" id="brief-bar" style="width:0%"></div></div>
+        <div class="prog-pct"  id="brief-pct">0%</div>
+      </div>
+    </div>
+
+    <!-- DOC -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-type">asset_type: doc / document</div>
+        <div class="card-name">Q1-content-brief.pdf</div>
+      </div>
+      <div class="card-body">
+
+        <div class="dark-frame">
+          <div class="dark-frame-inner">
+            <div class="doc-lines" id="doc-lines-container">
+              <div class="dl h"  style="width:55%"></div>
+              <div class="dl"    style="width:100%"></div>
+              <div class="dl"    style="width:93%"></div>
+              <div class="dl"    style="width:88%"></div>
+              <div class="dl"    style="width:100%"></div>
+              <div class="dl"    style="width:76%"></div>
+              <div class="dl"    style="width:100%"></div>
+              <div class="dl"    style="width:84%"></div>
+              <div class="dl"    style="width:60%"></div>
+            </div>
+            <div class="scan-line" id="doc-scan" style="top:0"></div>
+            <div class="frame-overlay">
+              <div class="frame-meta">
+                <span class="meta-l" id="doc-page">Page 1 / 4</span>
+                <span class="meta-r" id="doc-section">Section 1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="prog-label" id="doc-step">Loading document…</div>
+        <div class="prog-track"><div class="prog-fill" id="doc-bar" style="width:0%"></div></div>
+        <div class="prog-pct"  id="doc-pct">0%</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="controls">
+    <button class="btn-replay" onclick="resetAll()">Replay</button>
+  </div>
+
+  <!-- Spec notes -->
+  <div class="spec">
+    <h2>Implementation notes</h2>
+    <div class="spec-grid">
+      <div class="spec-col">
+        <h3>Brief (text)</h3>
+        <ul>
+          <li>Split <code>brief</code> field into words (max 30), wrap each in <code>&lt;span&gt;</code></li>
+          <li>Scan line moves continuously top→bottom, loops</li>
+          <li>Words highlight one-by-one in sync with progress (current = white <code>.88</code>, done = <code>.4</code>)</li>
+          <li>Bottom-left counter: <em>Word X / Y</em></li>
+          <li>Steps: Reading brief → Extracting keywords → Identifying moments → Tagging entities → Building taxonomy</li>
+          <li>Monospace font inside frame for NLP feel</li>
+        </ul>
+      </div>
+      <div class="spec-col">
+        <h3>Document (PDF / Doc)</h3>
+        <ul>
+          <li>9 skeleton lines inside dark frame (first line taller = heading)</li>
+          <li>Same scan line behaviour as brief</li>
+          <li>Lines light up progressively as progress advances</li>
+          <li>Bottom-left: <em>Page X / 4</em> — bottom-right: <em>Section Y</em></li>
+          <li>Steps: Loading document → Parsing content → Extracting sections → Classifying moments → Building taxonomy</li>
+          <li>Video files keep the existing Unsplash frame animation unchanged</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Demo data ──────────────────────────────────────────────────────────────
+var BRIEF_TEXT = 'Spring awareness push targeting 25–44 across premium streaming. Tone: warm and lifestyle-forward. Key themes: sustainability, family, outdoor living. Flight March–May. Premium inventory only.';
+var BRIEF_STEPS = ['Reading brief…','Extracting keywords…','Identifying moments…','Tagging entities…','Building taxonomy…'];
+var DOC_STEPS   = ['Loading document…','Parsing content…','Extracting sections…','Classifying moments…','Building taxonomy…'];
+
+// ── State ──────────────────────────────────────────────────────────────────
+var bp=0, dp=0, bsi=0, dsi=0, bsp=0, dsp=0, bcursor=0;
+var bT, dT, bsT, dsT;
+var briefWords = [];
+
+// ── Init brief words ───────────────────────────────────────────────────────
+function initBriefWords() {
+  briefWords = BRIEF_TEXT.split(/\s+/).filter(Boolean).slice(0, 30);
+  var container = document.getElementById('brief-words-container');
+  container.innerHTML = briefWords.map(function(w, i) {
+    return '<span class="word" id="bw-' + i + '">' + w + '</span>';
+  }).join(' ');
+  document.getElementById('brief-wordcount').textContent = 'Word 1 / ' + briefWords.length;
+}
+
+// ── Brief animation ────────────────────────────────────────────────────────
+function startBrief() {
+  var bar  = document.getElementById('brief-bar');
+  var pct  = document.getElementById('brief-pct');
+  var step = document.getElementById('brief-step');
+  var scan = document.getElementById('brief-scan');
+  var wcEl = document.getElementById('brief-wordcount');
+
+  bsT = setInterval(function() { bsp = (bsp + 2.5) % 100; scan.style.top = bsp + '%'; }, 20);
+  bT  = setInterval(function() {
+    bp = Math.min(bp + 1, 100);
+    bar.style.width = bp + '%';
+    pct.textContent = bp + '%';
+
+    var si = Math.min(Math.floor(bp / 20), BRIEF_STEPS.length - 1);
+    if (si !== bsi) { bsi = si; step.textContent = BRIEF_STEPS[si]; }
+
+    var newCursor = Math.ceil((bp / 100) * briefWords.length);
+    if (newCursor !== bcursor) {
+      if (bcursor > 0) {
+        var prev = document.getElementById('bw-' + (bcursor - 1));
+        if (prev) { prev.classList.remove('active'); prev.classList.add('done'); }
+      }
+      var cur = document.getElementById('bw-' + (newCursor - 1));
+      if (cur) cur.classList.add('active');
+      bcursor = newCursor;
+    }
+    wcEl.textContent = 'Word ' + Math.min(bcursor, briefWords.length) + ' / ' + briefWords.length;
+
+    if (bp >= 100) {
+      clearInterval(bT); clearInterval(bsT);
+      scan.style.display = 'none';
+      step.textContent = 'Analysis complete';
+      document.querySelectorAll('.word').forEach(function(w) { w.classList.remove('active'); w.classList.add('done'); });
+    }
+  }, 45);
+}
+
+// ── Doc animation ──────────────────────────────────────────────────────────
+function startDoc() {
+  var bar     = document.getElementById('doc-bar');
+  var pct     = document.getElementById('doc-pct');
+  var step    = document.getElementById('doc-step');
+  var scan    = document.getElementById('doc-scan');
+  var pageEl  = document.getElementById('doc-page');
+  var secEl   = document.getElementById('doc-section');
+  var lines   = document.querySelectorAll('#doc-lines-container .dl');
+
+  dsT = setInterval(function() { dsp = (dsp + 2.5) % 100; scan.style.top = dsp + '%'; }, 20);
+  dT  = setInterval(function() {
+    dp = Math.min(dp + 1, 100);
+    bar.style.width = dp + '%';
+    pct.textContent = dp + '%';
+
+    var si = Math.min(Math.floor(dp / 20), DOC_STEPS.length - 1);
+    if (si !== dsi) { dsi = si; step.textContent = DOC_STEPS[si]; }
+
+    var lit = Math.ceil((dp / 100) * lines.length);
+    lines.forEach(function(l, i) { i < lit ? l.classList.add('lit') : l.classList.remove('lit'); });
+
+    pageEl.textContent = 'Page ' + Math.min(Math.ceil(dp / 25), 4) + ' / 4';
+    secEl.textContent  = 'Section ' + Math.min(Math.ceil(dp / 16), 6);
+
+    if (dp >= 100) {
+      clearInterval(dT); clearInterval(dsT);
+      scan.style.display = 'none';
+      step.textContent = 'Analysis complete';
+    }
+  }, 45);
+}
+
+// ── Reset ──────────────────────────────────────────────────────────────────
+function resetAll() {
+  clearInterval(bT); clearInterval(dT); clearInterval(bsT); clearInterval(dsT);
+  bp=dp=bsi=dsi=bsp=dsp=bcursor=0;
+
+  document.getElementById('brief-bar').style.width = '0%';
+  document.getElementById('doc-bar').style.width   = '0%';
+  document.getElementById('brief-pct').textContent = '0%';
+  document.getElementById('doc-pct').textContent   = '0%';
+  document.getElementById('brief-step').textContent = 'Reading brief…';
+  document.getElementById('doc-step').textContent   = 'Loading document…';
+  document.getElementById('brief-scan').style.display = '';
+  document.getElementById('doc-scan').style.display   = '';
+  document.getElementById('doc-page').textContent    = 'Page 1 / 4';
+  document.getElementById('doc-section').textContent = 'Section 1';
+  document.querySelectorAll('#doc-lines-container .dl').forEach(function(l) { l.classList.remove('lit'); });
+
+  initBriefWords();
+  setTimeout(function() { startBrief(); startDoc(); }, 80);
+}
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+initBriefWords();
+setTimeout(function() { startBrief(); startDoc(); }, 400);
+</script>
+</body>
+</html>

@@ -3282,14 +3282,62 @@ function _mp2DoAnalyze() {
   var ca = document.getElementById('tx2-content-area');
   if (!ca) return;
 
-  var progressSteps = ['Analyzing metadata…','Detecting scenes & objects…','Classifying moments…','Building taxonomy map…','Matching episodes & shows…'];
-  var frames = [
-    'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=640&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=640&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1542838132-92c53300491e?w=640&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=640&h=360&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=640&h=360&fit=crop&q=80',
-  ];
+  // ── Animation: branch on input type ────────────────────────────────────────
+  var isTextBrief = (mp2TaxInputType === 'text');
+  var isDocBrief  = (mp2TaxInputType === 'doc');
+  var isVideo     = (mp2TaxInputType === 'video');
+
+  // For brief animation: split real text into words (first 30)
+  var _briefWords = [];
+  if (isTextBrief) {
+    var _briefRaw = (raw || '');
+    _briefWords = _briefRaw.split(/\s+/).filter(Boolean).slice(0, 30);
+    if (!_briefWords.length) _briefWords = ['Analyzing','brief','content…'];
+  }
+
+  var _docLineWidths = ['55%','100%','93%','88%','100%','76%','100%','84%','60%'];
+
+  var progressSteps = isTextBrief
+    ? ['Reading brief…','Extracting keywords…','Identifying moments…','Tagging entities…','Building taxonomy…']
+    : isDocBrief
+    ? ['Loading document…','Parsing content…','Extracting sections…','Classifying moments…','Building taxonomy…']
+    : ['Analyzing metadata…','Detecting scenes & objects…','Classifying moments…','Building taxonomy map…','Matching episodes & shows…'];
+
+  // Build inner frame HTML
+  var _frameInner = '';
+  if (isTextBrief) {
+    var _wordsHtml = _briefWords.map(function(w, i) {
+      return '<span id="tx2-w-' + i + '" style="color:rgba(255,255,255,.25);transition:color .2s">'
+        + w.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>';
+    }).join(' ');
+    _frameInner =
+      '<div style="padding:16px 14px;font-size:11px;line-height:1.8;height:100%;overflow:hidden;font-family:\'SF Mono\',\'Fira Mono\',monospace">' + _wordsHtml + '</div>';
+  } else if (isDocBrief) {
+    _frameInner = '<div style="padding:14px 16px;height:100%;display:flex;flex-direction:column;gap:7px">'
+      + _docLineWidths.map(function(w, i) {
+          var isH = i === 0;
+          return '<div id="tx2-dl-' + i + '" style="height:' + (isH ? '8' : '5') + 'px;border-radius:2px;background:rgba(255,255,255,' + (isH ? '.18' : '.12') + ');width:' + w + ';transition:background .3s"></div>';
+        }).join('')
+      + '</div>';
+  } else {
+    var _frames = [
+      'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=640&h=360&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=640&h=360&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1542838132-92c53300491e?w=640&h=360&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=640&h=360&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=640&h=360&fit=crop&q=80',
+    ];
+    _frameInner = '<img id="tx2-prog-frame" src="' + _frames[0] + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .5s">';
+  }
+
+  // Build meta bar (bottom of frame)
+  var _metaHtml = isTextBrief
+    ? '<span id="tx2-prog-wordcount" style="font-size:10px;color:rgba(255,255,255,.75);font-variant-numeric:tabular-nums;letter-spacing:.5px">Word 1 / ' + _briefWords.length + '</span>'
+    : isDocBrief
+    ? '<span id="tx2-prog-page" style="font-size:10px;color:rgba(255,255,255,.75);font-variant-numeric:tabular-nums;letter-spacing:.5px">Page 1 / 4</span>'
+    + '<span id="tx2-prog-section" style="font-size:10px;color:rgba(255,255,255,.5)">Section 1</span>'
+    : '<span id="tx2-prog-timecode" style="font-size:10px;color:rgba(255,255,255,.75);font-variant-numeric:tabular-nums;letter-spacing:.5px">00:00:00</span>'
+    + '<span id="tx2-prog-scene" style="font-size:10px;color:rgba(255,255,255,.5)">Scene 1 / 5</span>';
 
   ca.innerHTML =
     '<div style="max-width:520px;margin:0 auto">'
@@ -3298,12 +3346,11 @@ function _mp2DoAnalyze() {
     +   '<div style="font-size:15px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + mp2TaxFileName + '</div>'
     + '</div>'
     + '<div style="position:relative;width:100%;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#111;margin-bottom:14px">'
-    +   '<img id="tx2-prog-frame" src="' + frames[0] + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .5s">'
+    +   '<div style="position:absolute;inset:0">' + _frameInner + '</div>'
     +   '<div id="tx2-scan-line" style="position:absolute;left:0;right:0;height:2px;top:0%;background:rgba(237,0,94,.7);box-shadow:0 0 10px 2px rgba(237,0,94,.35);transition:none"></div>'
     +   '<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 55%);pointer-events:none">'
     +     '<div style="position:absolute;bottom:10px;left:12px;right:12px;display:flex;align-items:center;justify-content:space-between">'
-    +       '<span id="tx2-prog-timecode" style="font-size:10px;color:rgba(255,255,255,.75);font-variant-numeric:tabular-nums;letter-spacing:.5px">00:00:00</span>'
-    +       '<span id="tx2-prog-scene"    style="font-size:10px;color:rgba(255,255,255,.5)">Scene 1 / 5</span>'
+    +       _metaHtml
     +     '</div>'
     +   '</div>'
     + '</div>'
@@ -3312,37 +3359,69 @@ function _mp2DoAnalyze() {
     + '<div style="font-size:11px;color:var(--faint);text-align:right" id="tx2-progress-pct">0%</div>'
     + '</div>';
 
-  var pct = 0; var stepIdx = 0; var scanPct = 0; var frameIdx = 0;
+  var pct = 0; var stepIdx = 0; var scanPct = 0; var frameIdx = 0; var wordCursor = 0;
   var interval = setInterval(function() {
     pct = Math.min(pct + 1.0, 100);
     scanPct = (scanPct + 3) % 100;
-    var bar = document.getElementById('tx2-progress-bar');
-    var label = document.getElementById('tx2-progress-label');
-    var pctEl = document.getElementById('tx2-progress-pct');
+    var bar      = document.getElementById('tx2-progress-bar');
+    var label    = document.getElementById('tx2-progress-label');
+    var pctEl    = document.getElementById('tx2-progress-pct');
     var scanLine = document.getElementById('tx2-scan-line');
-    var timecode = document.getElementById('tx2-prog-timecode');
-    var sceneLbl = document.getElementById('tx2-prog-scene');
-    var frameEl = document.getElementById('tx2-prog-frame');
-    if (bar) bar.style.width = pct + '%';
+    if (bar)  bar.style.width = pct + '%';
     if (pctEl) pctEl.textContent = Math.round(pct) + '%';
     if (scanLine) scanLine.style.top = scanPct + '%';
-    var totalSec = Math.round((pct / 100) * 2655);
-    var hh = String(Math.floor(totalSec / 3600)).padStart(2, '0');
-    var mm = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
-    var ss = String(totalSec % 60).padStart(2, '0');
-    if (timecode) timecode.textContent = hh + ':' + mm + ':' + ss;
+
     var newStep = Math.min(Math.floor(pct / 20), progressSteps.length - 1);
     if (newStep !== stepIdx) {
       stepIdx = newStep;
       if (label) label.textContent = progressSteps[stepIdx];
-      var newFrameIdx = Math.min(newStep, frames.length - 1);
-      if (frameEl && newFrameIdx !== frameIdx) {
-        frameIdx = newFrameIdx;
-        frameEl.style.opacity = '0';
-        setTimeout(function() { if (frameEl) { frameEl.src = frames[frameIdx]; frameEl.style.opacity = '1'; } }, 250);
-      }
-      if (sceneLbl) sceneLbl.textContent = 'Scene ' + (newStep + 1) + ' / 5';
     }
+
+    if (isTextBrief) {
+      var newCursor = Math.ceil((pct / 100) * _briefWords.length);
+      if (newCursor !== wordCursor) {
+        if (wordCursor > 0) {
+          var prev = document.getElementById('tx2-w-' + (wordCursor - 1));
+          if (prev) prev.style.color = 'rgba(255,255,255,.4)';
+        }
+        var cur = document.getElementById('tx2-w-' + (newCursor - 1));
+        if (cur) cur.style.color = 'rgba(255,255,255,.88)';
+        wordCursor = newCursor;
+      }
+      var wcEl = document.getElementById('tx2-prog-wordcount');
+      if (wcEl) wcEl.textContent = 'Word ' + Math.min(wordCursor, _briefWords.length) + ' / ' + _briefWords.length;
+
+    } else if (isDocBrief) {
+      var litCount = Math.ceil((pct / 100) * _docLineWidths.length);
+      for (var li = 0; li < _docLineWidths.length; li++) {
+        var dlEl = document.getElementById('tx2-dl-' + li);
+        if (dlEl) dlEl.style.background = li < litCount ? 'rgba(255,255,255,.5)' : (li === 0 ? 'rgba(255,255,255,.18)' : 'rgba(255,255,255,.12)');
+      }
+      var pageEl = document.getElementById('tx2-prog-page');
+      var secEl  = document.getElementById('tx2-prog-section');
+      if (pageEl) pageEl.textContent = 'Page ' + Math.min(Math.ceil(pct / 25), 4) + ' / 4';
+      if (secEl)  secEl.textContent  = 'Section ' + Math.min(Math.ceil(pct / 16), 6);
+
+    } else {
+      var timecode = document.getElementById('tx2-prog-timecode');
+      var sceneLbl = document.getElementById('tx2-prog-scene');
+      var frameEl  = document.getElementById('tx2-prog-frame');
+      var totalSec = Math.round((pct / 100) * 2655);
+      var hh = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+      var mm = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+      var ss = String(totalSec % 60).padStart(2, '0');
+      if (timecode) timecode.textContent = hh + ':' + mm + ':' + ss;
+      if (newStep !== stepIdx - 1) { // already updated stepIdx above
+        var newFrameIdx = Math.min(stepIdx, _frames ? _frames.length - 1 : 0);
+        if (frameEl && newFrameIdx !== frameIdx) {
+          frameIdx = newFrameIdx;
+          frameEl.style.opacity = '0';
+          setTimeout(function() { if (frameEl) { frameEl.src = _frames[frameIdx]; frameEl.style.opacity = '1'; } }, 250);
+        }
+        if (sceneLbl) sceneLbl.textContent = 'Scene ' + (stepIdx + 1) + ' / 5';
+      }
+    }
+
     if (pct >= 100) {
       clearInterval(interval);
       if (scanLine) scanLine.style.display = 'none';
