@@ -3101,58 +3101,76 @@ var UI = (function () {
   // Medium-saturation palette — 24 chart-ready colors (good readability on white,
   // no neon, no pastel). Hues distributed ~15° apart across the full wheel.
   var CHART_COLORS_FULL = [
-    '#F47843', // Warm Orange
-    '#F4A234', // Amber
-    '#F0C030', // Yellow
-    '#AACC38', // Yellow-Lime
-    '#8CC440', // Lime
-    '#48BC6C', // Green
-    '#2AAC88', // Emerald
-    '#30B4B0', // Seafoam
-    '#38BCBC', // Teal
-    '#50C0D4', // Cyan
-    '#5AACD8', // Sky
-    '#5890D4', // Blue
-    '#6878CC', // Cornflower
-    '#7868CC', // Indigo
-    '#9870CC', // Violet
-    '#B860C8', // Purple
-    '#CC4CA4', // Magenta
-    '#E04CA0', // Hot Pink
-    '#E44878', // Rose
-    '#E84848', // Red
-    '#F06042', // Coral
-    '#E88840', // Orange-Amber
-    '#98C840', // Yellow-Green
-    '#40C0A0'  // Mint
+    '#F47843', // Warm Orange   — rgb(244,120,67)
+    '#F4A234', // Amber         — rgb(244,162,52)
+    '#F0C030', // Yellow        — rgb(240,192,48)
+    '#AACC38', // Yellow-Lime   — rgb(170,204,56)
+    '#8CC440', // Lime          — rgb(140,196,64)
+    '#48BC6C', // Green         — rgb(72,188,108)
+    '#2AAC88', // Emerald       — rgb(42,172,136)
+    '#30B4B0', // Seafoam       — rgb(48,180,176)
+    '#38BCBC', // Teal          — rgb(56,188,188)
+    '#50C0D4', // Cyan          — rgb(80,192,212)
+    '#5AACD8', // Sky           — rgb(90,172,216)
+    '#5890D4', // Blue          — rgb(88,144,212)
+    '#6878CC', // Cornflower    — rgb(104,120,204)
+    '#7868CC', // Indigo        — rgb(120,104,204)
+    '#9870CC', // Violet        — rgb(152,112,204)
+    '#B860C8', // Purple        — rgb(184,96,200)
+    '#CC4CA4', // Magenta       — rgb(204,76,164)
+    '#E04CA0', // Hot Pink      — rgb(224,76,160)
+    '#E44878', // Rose          — rgb(228,72,120)
+    '#E84848', // Red           — rgb(232,72,72)
+    '#F06042', // Coral         — rgb(240,96,66)
+    '#E88840', // Orange-Amber  — rgb(232,136,64)
+    '#98C840', // Yellow-Green  — rgb(152,200,64)
+    '#40C0A0'  // Mint          — rgb(64,192,160)
+  ];
+
+  var CHART_COLORS_FULL_RGB = [
+    '244,120,67',  '244,162,52',  '240,192,48',  '170,204,56',
+    '140,196,64',  '72,188,108',  '42,172,136',  '48,180,176',
+    '56,188,188',  '80,192,212',  '90,172,216',  '88,144,212',
+    '104,120,204', '120,104,204', '152,112,204', '184,96,200',
+    '204,76,164',  '224,76,160',  '228,72,120',  '232,72,72',
+    '240,96,66',   '232,136,64',  '152,200,64',  '64,192,160'
   ];
 
   // Same hues — lighter tints (~88–92% lightness) for fills, area charts, badge backgrounds
   var CHART_COLORS_LIGHT = [
-    '#FDE4D4', // Warm Orange
-    '#FDEACC', // Amber
-    '#FDF4C0', // Yellow
-    '#EAF5C0', // Yellow-Lime
-    '#E0F0C0', // Lime
-    '#C8F0D4', // Green
-    '#C0EEE4', // Emerald
-    '#C0EEEC', // Seafoam
-    '#C0ECEC', // Teal
-    '#C0F2F8', // Cyan
-    '#C4E8F8', // Sky
-    '#C8DCF8', // Blue
-    '#CDD0F4', // Cornflower
-    '#D0CCF4', // Indigo
-    '#DDD0F4', // Violet
-    '#EAD0F4', // Purple
-    '#F4D0EC', // Magenta
-    '#F8D0EC', // Hot Pink
-    '#FAD0E0', // Rose
-    '#FAD0D0', // Red
-    '#FDD8CC', // Coral
-    '#FDE4BC', // Orange-Amber
-    '#E8F4C0', // Yellow-Green
-    '#C8F4E8'  // Mint
+    '#FDE4D4', // Warm Orange   — rgb(253,228,212)
+    '#FDEACC', // Amber         — rgb(253,234,204)
+    '#FDF4C0', // Yellow        — rgb(253,244,192)
+    '#EAF5C0', // Yellow-Lime   — rgb(234,245,192)
+    '#E0F0C0', // Lime          — rgb(224,240,192)
+    '#C8F0D4', // Green         — rgb(200,240,212)
+    '#C0EEE4', // Emerald       — rgb(192,238,228)
+    '#C0EEEC', // Seafoam       — rgb(192,238,236)
+    '#C0ECEC', // Teal          — rgb(192,236,236)
+    '#C0F2F8', // Cyan          — rgb(192,242,248)
+    '#C4E8F8', // Sky           — rgb(196,232,248)
+    '#C8DCF8', // Blue          — rgb(200,220,248)
+    '#CDD0F4', // Cornflower    — rgb(205,208,244)
+    '#D0CCF4', // Indigo        — rgb(208,204,244)
+    '#DDD0F4', // Violet        — rgb(221,208,244)
+    '#EAD0F4', // Purple        — rgb(234,208,244)
+    '#F4D0EC', // Magenta       — rgb(244,208,236)
+    '#F8D0EC', // Hot Pink      — rgb(248,208,236)
+    '#FAD0E0', // Rose          — rgb(250,208,224)
+    '#FAD0D0', // Red           — rgb(250,208,208)
+    '#FDD8CC', // Coral         — rgb(253,216,204)
+    '#FDE4BC', // Orange-Amber  — rgb(253,228,188)
+    '#E8F4C0', // Yellow-Green  — rgb(232,244,192)
+    '#C8F4E8'  // Mint          — rgb(200,244,232)
+  ];
+
+  var CHART_COLORS_LIGHT_RGB = [
+    '253,228,212', '253,234,204', '253,244,192', '234,245,192',
+    '224,240,192', '200,240,212', '192,238,228', '192,238,236',
+    '192,236,236', '192,242,248', '196,232,248', '200,220,248',
+    '205,208,244', '208,204,244', '221,208,244', '234,208,244',
+    '244,208,236', '248,208,236', '250,208,224', '250,208,208',
+    '253,216,204', '253,228,188', '232,244,192', '200,244,232'
   ];
 
   return {
@@ -3219,7 +3237,9 @@ var UI = (function () {
     alertBanner: alertBanner, formulaCard: formulaCard, aiInsights: aiInsights,
     // Chart palettes
     CHART_COLORS_FULL: CHART_COLORS_FULL,
+    CHART_COLORS_FULL_RGB: CHART_COLORS_FULL_RGB,
     CHART_COLORS_LIGHT: CHART_COLORS_LIGHT,
+    CHART_COLORS_LIGHT_RGB: CHART_COLORS_LIGHT_RGB,
     // Filter bar
     filterDd: filterDd, _fdToggle: _fdToggle, _fdPick: _fdPick,
     filtersBar: filtersBar,

@@ -1444,16 +1444,52 @@ function switchPageTab(id, btn) {
           'Rose','Red','Coral','Orange-Amber','Yellow-Green','Mint'
         ];
 
-        var chartLightLabels = chartLabels.map(function(l){ return l + ' (light)'; });
+        function chartPaletteTable(fullColors, lightColors, fullRgb, lightRgb, names) {
+          var TH = 'padding:7px 12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);text-align:left;border-bottom:1px solid var(--border)';
+          var TD = 'padding:8px 12px;font-size:11px;border-bottom:1px solid var(--border);vertical-align:middle';
+          var SW = 'display:inline-block;width:20px;height:20px;border-radius:4px;border:1px solid rgba(0,0,0,.07);vertical-align:middle;flex-shrink:0';
+          return '<table style="width:100%;border-collapse:collapse">'
+            + '<thead><tr>'
+            + '<th style="' + TH + ';width:130px">Name</th>'
+            + '<th style="' + TH + '">Full <code style="font-weight:400;text-transform:none">CHART_COLORS_FULL</code></th>'
+            + '<th style="' + TH + '">Light <code style="font-weight:400;text-transform:none">CHART_COLORS_LIGHT</code></th>'
+            + '</tr></thead><tbody>'
+            + names.map(function(name, i) {
+                var last = i === names.length - 1 ? ';border-bottom:none' : '';
+                return '<tr>'
+                  + '<td style="' + TD + last + ';font-weight:500;color:var(--text)">' + name + '</td>'
+                  + '<td style="' + TD + last + '">'
+                  +   '<div style="display:flex;align-items:center;gap:8px">'
+                  +     '<span style="' + SW + ';background:' + fullColors[i] + '"></span>'
+                  +     '<span>'
+                  +       '<code style="display:block;font-size:11px;color:var(--text);font-family:' + MONO + '">' + fullColors[i] + '</code>'
+                  +       '<code style="display:block;font-size:10px;color:var(--faint);font-family:' + MONO + ';margin-top:1px">rgb(' + fullRgb[i] + ')</code>'
+                  +     '</span>'
+                  +   '</div>'
+                  + '</td>'
+                  + '<td style="' + TD + last + '">'
+                  +   '<div style="display:flex;align-items:center;gap:8px">'
+                  +     '<span style="' + SW + ';background:' + lightColors[i] + '"></span>'
+                  +     '<span>'
+                  +       '<code style="display:block;font-size:11px;color:var(--text);font-family:' + MONO + '">' + lightColors[i] + '</code>'
+                  +       '<code style="display:block;font-size:10px;color:var(--faint);font-family:' + MONO + ';margin-top:1px">rgb(' + lightRgb[i] + ')</code>'
+                  +     '</span>'
+                  +   '</div>'
+                  + '</td>'
+                  + '</tr>';
+              }).join('')
+            + '</tbody></table>';
+        }
 
         return [
           block('Design Tokens — CSS variables', tokens),
           block('Semantic / Status Colours', semanticHtml),
-          block('Chart Palette — 24 full colours (UI.CHART_COLORS_FULL)',
-            swatchGrid(UI.CHART_COLORS_FULL, chartLabels)
-          ),
-          block('Chart Palette — 24 light tints (UI.CHART_COLORS_LIGHT)',
-            swatchGrid(UI.CHART_COLORS_LIGHT, chartLightLabels)
+          block('Chart Palette — 24 pairs  ·  UI.CHART_COLORS_FULL  ·  UI.CHART_COLORS_LIGHT',
+            chartPaletteTable(
+              UI.CHART_COLORS_FULL, UI.CHART_COLORS_LIGHT,
+              UI.CHART_COLORS_FULL_RGB, UI.CHART_COLORS_LIGHT_RGB,
+              chartLabels
+            )
           ),
         ].join('');
       }
