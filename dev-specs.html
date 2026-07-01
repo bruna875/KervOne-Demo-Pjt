@@ -1386,7 +1386,35 @@ function switchPageTab(id, btn) {
           + tok('--muted',     '#5a6578', 'Secondary / supporting text', '#5a6578')
           + tok('--faint',     '#9aa3b0', 'Tertiary / placeholder / disabled', '#9aa3b0')
           + '<div style="font-size:10px;font-weight:700;color:var(--faint);letter-spacing:.06em;font-family:' + MONO + ';margin-top:16px;margin-bottom:12px">BRAND</div>'
-          + tok('--accent',    '#e11d8f', 'Primary action, links, active UI states', '#e11d8f')
+          + tok('--accent',             '#ED005E',             'Primary action, links, active UI states', '#ED005E')
+          + tok('--accent-foreground',  '#ffffff',             'Text on accent background', '#ED005E')
+          + tok('--accent-hover',       '#d4005a',             'Hover state of accent', '#d4005a')
+          + tok('--accent-rgb',         '237,0,94',            'RGB triplet for rgba() usage', '#ED005E')
+          + tok('--accent-light',       '#FDF0F4',             'Tinted accent background', '#FDF0F4')
+          + tok('--accent-muted',       '#F8C0D4',             'Muted accent — borders, dividers', '#F8C0D4')
+          + '<div style="font-size:10px;font-weight:700;color:var(--faint);letter-spacing:.06em;font-family:' + MONO + ';margin-top:16px;margin-bottom:12px">SECONDARY (Navy)</div>'
+          + tok('--secondary',          '#0f172a',             'Navy dark — Distribute / DSP buttons', '#0f172a')
+          + tok('--secondary-hover',    '#1e293b',             'Hover state of secondary', '#1e293b')
+          + tok('--secondary-foreground','#ffffff',            'Text on secondary background', '#0f172a')
+          + '<div style="font-size:10px;font-weight:700;color:var(--faint);letter-spacing:.06em;font-family:' + MONO + ';margin-top:16px;margin-bottom:12px">INPUT</div>'
+          + tok('--input',              'rgba(0,0,0,0.12)',    'Input border at rest', '#e2e5ea')
+          + tok('--input-bg',           '#ffffff',             'Input background', '#ffffff')
+          + tok('--input-foreground',   '#0D1E36',             'Input text color', '#0D1E36')
+          + tok('--input-placeholder',  '#A8A8A0',             'Placeholder text', '#A8A8A0')
+          + tok('--input-focus',        '#ED005E',             'Focus border color', '#ED005E')
+          + tok('--input-focus-ring',   'rgba(237,0,94,0.1)', 'Focus ring shadow color', '#FDE4EF')
+          + tok('--input-radius',       '8px',                 'Input border radius', 'transparent')
+          + '<div style="font-size:10px;font-weight:700;color:var(--faint);letter-spacing:.06em;font-family:' + MONO + ';margin-top:16px;margin-bottom:12px">SIDEBAR</div>'
+          + tok('--sidebar',                  '#ffffff',          'Sidebar background', '#ffffff')
+          + tok('--sidebar-foreground',       '#0D1E36',          'Sidebar text', '#0D1E36')
+          + tok('--sidebar-primary',          '#ED005E',          'Active nav item indicator', '#ED005E')
+          + tok('--sidebar-primary-foreground','#ffffff',         'Text on sidebar-primary', '#ED005E')
+          + tok('--sidebar-secondary',        '#0f172a',          'Secondary action in sidebar', '#0f172a')
+          + tok('--sidebar-secondary-foreground','#ffffff',       'Text on sidebar-secondary', '#0f172a')
+          + tok('--sidebar-accent',           '#F2F2EF',          'Hover / active row background', '#F2F2EF')
+          + tok('--sidebar-accent-foreground','#0D1E36',          'Text on sidebar-accent', '#0D1E36')
+          + tok('--sidebar-border',           'rgba(0,0,0,0.08)','Sidebar divider', '#e2e5ea')
+          + tok('--sidebar-ring',             '#ED005E',          'Focus ring inside sidebar', '#ED005E')
           + '</div>';
 
         // Status chip rows — render the actual chip + bg swatch
