@@ -33,6 +33,49 @@ var UI = (function () {
     'letter-spacing:.5px','color:var(--muted)','display:block','margin-bottom:5px'
   ].join(';');
 
+  // ── Design tokens — color constants ─────────────────────────────────────
+  var TOKENS = {
+    // Brand
+    accent:             '#ED005E',
+    accentFg:           '#ffffff',
+    accentHover:        '#d4005a',
+    accentRgb:          '237,0,94',
+    accentLight:        '#FDF0F4',
+    accentMuted:        '#F8C0D4',
+    // Input
+    input:              'rgba(0,0,0,0.12)',
+    inputBg:            '#ffffff',
+    inputFg:            '#0D1E36',
+    inputPlaceholder:   '#A8A8A0',
+    inputFocus:         '#ED005E',
+    inputFocusRing:     'rgba(237,0,94,0.1)',
+    inputRadius:        '8px',
+    // Secondary — navy dark
+    secondary:          '#0f172a',
+    secondaryHover:     '#1e293b',
+    secondaryFg:        '#ffffff',
+    // Text hierarchy
+    text:               '#0D1E36',
+    muted:              '#6B6B65',
+    faint:              '#A8A8A0',
+    // Backgrounds
+    surface:            '#ffffff',
+    bg:                 '#F3F5F8',
+    hover:              'rgba(0,0,0,0.04)',
+    subtle:             '#FDF0F4',
+    // Sidebar
+    sidebar:            '#ffffff',
+    sidebarFg:          '#0D1E36',
+    sidebarPrimary:     '#ED005E',
+    sidebarPrimaryFg:   '#ffffff',
+    sidebarSecondary:   '#0f172a',
+    sidebarSecondaryFg: '#ffffff',
+    sidebarAccent:      '#F2F2EF',
+    sidebarAccentFg:    '#0D1E36',
+    sidebarBorder:      'rgba(0,0,0,0.08)',
+    sidebarRing:        '#ED005E',
+  };
+
   // Select chevron data-URI
   var ARW = "url(\"data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23A8A8A0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")";
 
@@ -3175,7 +3218,7 @@ var UI = (function () {
 
   return {
     // Tokens (for inline use)
-    IF: IF, LB: LB,
+    IF: IF, LB: LB, TOKENS: TOKENS,
     // Utils
     esc: esc,
     // Fields

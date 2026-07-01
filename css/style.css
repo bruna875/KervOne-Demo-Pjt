@@ -14,8 +14,34 @@ body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);font-size:13p
   --subtle:#FDF0F4;
   --hover:rgba(0,0,0,0.04);
   --accent:#ED005E;
+  --accent-foreground:#ffffff;
+  --accent-hover:#d4005a;
+  --accent-rgb:237,0,94;
   --accent-light:#FDF0F4;
   --accent-muted:#F8C0D4;
+  /* Input */
+  --input:rgba(0,0,0,0.12);
+  --input-bg:#ffffff;
+  --input-foreground:#0D1E36;
+  --input-placeholder:#A8A8A0;
+  --input-focus:#ED005E;
+  --input-focus-ring:rgba(237,0,94,0.1);
+  --input-radius:8px;
+  /* Secondary — navy dark */
+  --secondary:#0f172a;
+  --secondary-hover:#1e293b;
+  --secondary-foreground:#ffffff;
+  /* Sidebar */
+  --sidebar:#ffffff;
+  --sidebar-foreground:#0D1E36;
+  --sidebar-primary:#ED005E;
+  --sidebar-primary-foreground:#ffffff;
+  --sidebar-secondary:#0f172a;
+  --sidebar-secondary-foreground:#ffffff;
+  --sidebar-accent:#F2F2EF;
+  --sidebar-accent-foreground:#0D1E36;
+  --sidebar-border:rgba(0,0,0,0.08);
+  --sidebar-ring:#ED005E;
   --sw:220px;
   --sc:52px;
   --tr:.22s cubic-bezier(.4,0,.2,1)
