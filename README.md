@@ -1,2 +1,2 @@
-# bruna-personal-workspace
-Place where I test ideas before promoting to other repos
+# KervOne-Demo-Pjt
+Place where I create a quick prototype of K1 Demo
