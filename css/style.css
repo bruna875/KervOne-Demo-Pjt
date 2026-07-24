@@ -90,7 +90,7 @@ body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);font-size:13p
 .lname{font-size:15px;font-weight:500;letter-spacing:-.3px;white-space:nowrap;transition:opacity var(--tr)}
 .sb.col .lname{opacity:0}
 .sblogo-icon{height:24px;width:24px;object-fit:contain;flex-shrink:0;display:block}
-.sblogo-text{height:24px;width:auto;object-fit:contain;flex-shrink:0;display:block;transition:opacity var(--tr),width var(--tr)}
+.sblogo-text{font-size:15px;font-weight:600;letter-spacing:-.3px;color:var(--text);white-space:nowrap;overflow:hidden;flex-shrink:0;transition:opacity var(--tr),width var(--tr)}
 .sb.col .sblogo-text{opacity:0;width:0;pointer-events:none}
 .sbnav{flex:1;padding:10px 0;overflow-y:auto;overflow-x:hidden}
 .sbnav::-webkit-scrollbar{width:3px}
