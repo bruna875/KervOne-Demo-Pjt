@@ -413,7 +413,7 @@ function mp2OpenDistributeModal() {
   function renderCards(list) {
     if (!list.length) return '<div style="padding:24px;text-align:center;font-size:12px;color:var(--faint);grid-column:1/-1">No partners found</div>';
     return list.map(function(p) {
-      var color     = (typeof _dspColors !== 'undefined' && _dspColors[p.name]) || '#64748b';
+      var color     = (typeof _dspColors !== 'undefined' && _dspColors[p.name]) || '#5A6578';
       var logoHtml  = (typeof _dspLogoHtml === 'function') ? _dspLogoHtml(p.name, 36) : '<div style="width:36px;height:36px;border-radius:9px;background:' + color + ';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0">' + p.name.charAt(0) + '</div>';
       var typeColor = p.type === 'DSP' ? '#1d4ed8' : '#7c3aed';
       var typeBg    = p.type === 'DSP' ? '#eff6ff' : '#f5f3ff';
@@ -1826,11 +1826,11 @@ function mp2ShowUpload() {
     +           '</div>'
     +           '<div class="tx2-seg" id="tx2-opt-library" onclick="mp2SelectInput(\'library\')">'
     +             '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10l-3.1-3.1a2 2 0 0 0-2.814.014L6 21"/><path d="m14 19.5 3-3 3 3"/><path d="M17 22v-5.5"/><circle cx="9" cy="9" r="2"/></svg>'
-    +             '<span>Asset from Library</span>'
+    +             '<span>Asset from Library <span id="mp2-tab-badge-library" style="display:none;min-width:13px;height:13px;border-radius:7px;padding:0 3px;background:#5A6578;color:#fff;font-size:8px;font-weight:700;line-height:13px;text-align:center;vertical-align:middle;margin-left:3px"></span></span>'
     +           '</div>'
     +           '<div class="tx2-seg" id="tx2-opt-brief" onclick="mp2SelectInput(\'brief\')">'
     +             '<svg width="13" height="13" viewBox="0 0 32 32" fill="none"><path d="M4 8h24M4 14h18M4 20h24M4 26h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
-    +             '<span>Brief</span>'
+    +             '<span>Brief <span id="mp2-tab-badge-brief" style="display:none;min-width:13px;height:13px;border-radius:7px;padding:0 3px;background:#5A6578;color:#fff;font-size:8px;font-weight:700;line-height:13px;text-align:center;vertical-align:middle;margin-left:3px"></span></span>'
     +           '</div>'
     +         '</div>'
     +         '<div id="tx2-input-area" style="margin-bottom:10px">' + inputArea('video') + '</div>'
@@ -2016,6 +2016,7 @@ function mp2ConfirmLibraryAsset() {
   var area = document.getElementById('tx2-input-area');
   if (area) area.innerHTML = _mp2LibrarySelectedGridHtml(items);
   mp2CloseLibraryModal();
+  mp2UpdateTabBadges();
 }
 
 function mp2DeselectLibraryItem(id) {
@@ -2036,6 +2037,7 @@ function mp2DeselectLibraryItem(id) {
   } else {
     area.innerHTML = _mp2LibrarySelectedGridHtml(mp2LibrarySelectedItems);
   }
+  mp2UpdateTabBadges();
 }
 
 function _mp2LibrarySelectedGridHtml(items) {
@@ -2935,7 +2937,47 @@ function mp2FilterLibraryItems(q) {
   });
 }
 
+function mp2UpdateTabBadges() {
+  var libEl  = document.getElementById('tx2-opt-library');
+  var briefEl = document.getElementById('tx2-opt-brief');
+  var libActive   = libEl   && libEl.classList.contains('tx2-seg--act');
+  var briefActive = briefEl && briefEl.classList.contains('tx2-seg--act');
+
+  var libBadge = document.getElementById('mp2-tab-badge-library');
+  if (libBadge) {
+    var libCount = (mp2LibrarySelectedItems && mp2LibrarySelectedItems.length) || 0;
+    libBadge.textContent = libCount;
+    libBadge.style.display = libCount > 0 ? 'inline-flex' : 'none';
+    libBadge.style.alignItems = 'center';
+    libBadge.style.justifyContent = 'center';
+    libBadge.style.background = libActive ? 'var(--accent)' : '#5A6578';
+  }
+  var briefBadge = document.getElementById('mp2-tab-badge-brief');
+  if (briefBadge) {
+    var liveText = '';
+    var ta = document.getElementById('tx2-text-input');
+    if (ta) liveText = ta.value;
+    var hasText = !!((liveText || _mp2BriefContent || '').trim());
+    var liveDoc = '';
+    var lbl = document.getElementById('tx2-brief-file-label');
+    if (lbl && lbl.textContent !== 'Upload Doc or PDF') liveDoc = lbl.textContent;
+    var hasDoc = !!(liveDoc || _mp2DocName);
+    var briefCount = (hasText ? 1 : 0) + (hasDoc ? 1 : 0);
+    briefBadge.textContent = briefCount;
+    briefBadge.style.display = briefCount > 0 ? 'inline-flex' : 'none';
+    briefBadge.style.alignItems = 'center';
+    briefBadge.style.justifyContent = 'center';
+    briefBadge.style.background = briefActive ? 'var(--accent)' : '#5A6578';
+  }
+}
+
 function mp2SelectInput(type) {
+  // Capture brief state before leaving
+  var _curTa = document.getElementById('tx2-text-input');
+  if (_curTa) _mp2BriefContent = _curTa.value;
+  var _curLbl = document.getElementById('tx2-brief-file-label');
+  if (_curLbl && _curLbl.textContent !== 'Upload Doc or PDF') _mp2DocName = _curLbl.textContent;
+
   mp2ClearStep3Error();
   ['video', 'library', 'brief'].forEach(function(t) {
     var el = document.getElementById('tx2-opt-' + t);
@@ -2965,20 +3007,24 @@ function mp2SelectInput(type) {
       + '<button onclick="event.stopPropagation();mp2OpenLibraryModal()" style="display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 12px;border:1px solid var(--border-md);border-radius:7px;font-size:11px;font-weight:500;color:var(--text);background:var(--surface);cursor:pointer;font-family:inherit;margin-top:8px;transition:border .15s" onmouseover="this.style.borderColor=\'var(--accent)\'" onmouseout="this.style.borderColor=\'var(--border-md)\'"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Browse</button>'
       + '</div>';
   } else {
-    mp2TaxInputType = 'text';
+    mp2TaxInputType = (_mp2DocName && !(_mp2BriefContent && _mp2BriefContent.trim())) ? 'doc' : 'text';
     mp2LibrarySelected = null;
     mp2LibrarySelectedItems = [];
     area.innerHTML = mp2BriefHtml();
   }
+  mp2UpdateTabBadges();
 }
 
 function mp2BriefHtml() {
+  var _restoredText = _mp2BriefContent || '';
+  var _restoredDoc  = _mp2DocName || '';
+  var _escapedText  = _restoredText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return '<div style="border:1px solid var(--border-md);border-radius:8px;overflow:hidden;background:var(--surface)">'
     + '<div style="position:relative">'
     +   '<textarea id="tx2-text-input"'
     +   ' placeholder="Paste or type your brief here. The AI will analyse topics, sentiments, moments and taxonomy classifications…"'
-    +   ' oninput="if(this.value.trim())mp2ClearStep3Error()"'
-    +   ' style="width:100%;box-sizing:border-box;min-height:110px;resize:none;border:none;outline:none;padding:10px 36px 10px 12px;font-size:13px;font-family:inherit;color:var(--text);background:transparent;display:block"></textarea>'
+    +   ' oninput="if(this.value.trim())mp2ClearStep3Error();_mp2BriefContent=this.value;mp2UpdateTabBadges()"'
+    +   ' style="width:100%;box-sizing:border-box;min-height:110px;resize:none;border:none;outline:none;padding:10px 36px 10px 12px;font-size:13px;font-family:inherit;color:var(--text);background:transparent;display:block">' + _escapedText + '</textarea>'
     +   '<button type="button" onclick="mp2OpenBriefExpand()" title="Expand" style="position:absolute;top:8px;right:8px;background:none;border:none;cursor:pointer;padding:3px;color:var(--muted);line-height:1;border-radius:4px;transition:color .13s,background .13s" onmouseenter="this.style.color=\'var(--text)\';this.style.background=\'var(--bg)\'" onmouseleave="this.style.color=\'var(--muted)\';this.style.background=\'none\'">'
     +     '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>'
     +   '</button>'
@@ -2989,10 +3035,10 @@ function mp2BriefHtml() {
     +   ' onmouseenter="this.style.background=\'var(--bg)\';this.style.color=\'var(--text)\'"'
     +   ' onmouseleave="this.style.background=\'\';this.style.color=\'var(--muted)\'">'
     +   '<svg width="13" height="13" viewBox="0 0 32 32" fill="none"><path d="M6 4h14l6 6v18a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" stroke-width="1.8"/><path d="M20 4v6h6M10 14h12M10 18h12M10 22h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
-    +   '<span id="tx2-brief-file-label">Upload Doc or PDF</span>'
+    +   '<span id="tx2-brief-file-label">' + (_restoredDoc || 'Upload Doc or PDF') + '</span>'
     + '</label>'
     + '<input type="file" id="tx2-file-input-doc" style="display:none" accept=".pdf,.doc,.docx"'
-    +   ' onchange="var n=this.files[0]?this.files[0].name:\'\';document.getElementById(\'tx2-brief-file-label\').textContent=n||\'Upload Doc or PDF\';mp2TaxInputType=n?\'doc\':\'text\';if(n)mp2ClearStep3Error()">'
+    +   ' onchange="var n=this.files[0]?this.files[0].name:\'\';document.getElementById(\'tx2-brief-file-label\').textContent=n||\'Upload Doc or PDF\';mp2TaxInputType=n?\'doc\':\'text\';_mp2DocName=n||\'\';if(n)mp2ClearStep3Error();mp2UpdateTabBadges()">'
     + '</div>';
 }
 
@@ -3072,6 +3118,7 @@ function mp2CloseBriefExpand() {
 
   var overlay = document.getElementById('mp2-brief-expand-overlay');
   if (overlay) overlay.remove();
+  mp2UpdateTabBadges();
 }
 
 function mp2Analyze() {
@@ -7563,7 +7610,7 @@ function mp2InitRefineScatter(momentName) {
       xAxis:{
         categories:MP2_REFINE_MOMENT_LABELS,
         gridLineWidth:1,gridLineColor:'#f1f5f9',lineWidth:0,tickLength:0,title:{text:null},
-        labels:{style:{fontSize:'8px',color:'#64748b'},rotation:-45,y:12},
+        labels:{style:{fontSize:'8px',color:'#5A6578'},rotation:-45,y:12},
         plotBands:[]
       },
       yAxis:{min:55,max:100,gridLineWidth:1,gridLineColor:'#f1f5f9',title:{text:null},labels:{enabled:false}},
@@ -8727,7 +8774,7 @@ function txRenderAdAnalysis() {
     Highcharts.chart('tx-ad-bubble-chart', {
       chart: { type:'bubble', backgroundColor:'transparent', plotBorderWidth:0, height:null, margin:[10,20,72,14], animation:{duration:600}, style:{fontFamily:'inherit'} },
       title: { text:null }, legend:{enabled:false}, credits:{enabled:false}, exporting:{enabled:false},
-      xAxis: { categories:momentLabels, gridLineWidth:1, gridLineColor:'#f1f5f9', lineWidth:0, tickLength:0, title:{text:null}, labels:{style:{fontSize:'9px',color:'#64748b'},rotation:-35,y:16} },
+      xAxis: { categories:momentLabels, gridLineWidth:1, gridLineColor:'#f1f5f9', lineWidth:0, tickLength:0, title:{text:null}, labels:{style:{fontSize:'9px',color:'#5A6578'},rotation:-35,y:16} },
       yAxis: { min:55, max:100, gridLineWidth:1, gridLineColor:'#f1f5f9', title:{text:null}, labels:{enabled:false} },
       tooltip: {
         useHTML:true, backgroundColor:'#1e293b', borderColor:'#334155', borderRadius:8,
