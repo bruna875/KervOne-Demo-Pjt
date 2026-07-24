@@ -4460,7 +4460,7 @@ function aiDdContent(param) {
   }
 
   if (param === 'type') {
-    var tyItems = ['VoD', 'Organic Pause', 'Live'];
+    var tyItems = ['CTV', 'OLV'];
     var tyAllChecked = p.mode === 'all';
     var TY_ROW = 'display:flex;align-items:center;gap:9px;padding:5px 2px;cursor:pointer;font-size:13px;color:var(--text);user-select:none;border-radius:5px;';
     return '<div style="display:flex;flex-direction:column">'
