@@ -56,14 +56,17 @@ body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);font-size:13p
 @media(min-width:768px){.auth-left{padding:2.5rem}}
 .auth-brand{display:flex;align-items:center;justify-content:center;gap:8px}
 @media(min-width:768px){.auth-brand{justify-content:flex-start}}
+.auth-brand-mark{width:24px;height:24px;object-fit:contain;flex-shrink:0}
 .auth-brand-text{font-size:14px;font-weight:500;letter-spacing:-.2px}
 .auth-formwrap{flex:1;display:flex;align-items:center;justify-content:center}
 .auth-forminner{width:100%;max-width:300px}
-.auth-right{display:none;position:relative;background:var(--accent)}
+.auth-right{display:none;background:var(--accent)}
 @media(min-width:1024px){.auth-right{display:block}}
-.auth-right-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-.auth-right-mark{width:96px;height:auto;opacity:.92;filter:brightness(0) invert(1)}
-.amark{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.auth-certified{display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:1.5rem}
+@media(min-width:768px){.auth-certified{align-items:flex-start}}
+.auth-certified-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--faint)}
+.auth-certified-logos{display:flex;align-items:center;gap:16px}
+.auth-certified-img{height:32px;width:auto;object-fit:contain}
 .atitle{font-size:21px;font-weight:500;letter-spacing:-.5px;margin-bottom:5px}
 .asub{font-size:12px;color:var(--muted);margin-bottom:1.75rem}
 .flabel{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:5px}
@@ -74,9 +77,6 @@ body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);font-size:13p
 .abtn{width:100%;height:40px;background:var(--accent);color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;margin-top:4px;transition:opacity .15s}
 .abtn:hover{opacity:.88}
 .aerr{font-size:11px;color:#C0392B;min-height:16px;margin-top:7px}
-.demo-creds{background:var(--subtle);border:1px solid var(--accent-muted);border-radius:5px;padding:10px 14px;margin-top:14px;text-align:left;color:var(--muted);font-size:11px;line-height:1.6}
-.demo-creds-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);margin-bottom:5px}
-.demo-creds strong{color:var(--text)}
 
 /* ── App shell ── */
 #app{display:none;height:100vh}
