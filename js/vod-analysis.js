@@ -2327,7 +2327,6 @@ function sdtInjectStyles() {
     .ai-trigger:hover { color: #e11d8f; text-decoration-color: #e11d8f; background: #fdf2f8; }
     .ai-trigger--set  { color: #e11d8f; font-weight: 600; text-decoration: underline solid #e11d8f; text-underline-offset: 2px; }
     .ai-trigger--set:hover { background: #fdf2f8; }
-    .ai-trigger--disabled, .ai-trigger--disabled:hover { cursor: default; opacity: .45; text-decoration: none; background: none; pointer-events: none; }
     /* Dual range slider */
     .ai-range {
       position: absolute; width: 100%; height: 100%; top: 0; margin: 0; padding: 0;

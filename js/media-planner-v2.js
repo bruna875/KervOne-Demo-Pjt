@@ -1592,8 +1592,7 @@ function mp2BuildNewPlanAIPanel() {
     + '<div style="font-size:15px;line-height:2;color:var(--text);margin-bottom:32px;text-align:left">'
     +   'The budget for my media plan is ' + aiTriggerHtml('budget')
     +   ' and I want to deliver ' + aiTriggerHtml('impressions') + ' impressions per day. '
-    +   'I want to target ' + aiTriggerHtml('type') + ' Inventory, and the following channels: '
-    +   aiTriggerHtml('channels') + '. '
+    +   'I want to target ' + aiTriggerHtml('type') + ' Inventory. '
     +   'My Brand Safety parameters are ' + aiTriggerHtml('brand') + '. '
     +   'Use ' + aiTriggerHtml('score') + ' Match Score and a ' + aiTriggerHtml('window') + ' Lookback.'
     + '</div>'
@@ -4091,7 +4090,6 @@ var mp2AiParams = {
   budget:      { noBudget: false, min: 0, max: 1000000, exact: '' },
   impressions: { noEstimate: false, min: 0, max: 10000000, exact: '' },
   daypart:     { mode: 'any', values: [] },
-  channels:    { mode: 'any', values: [] },
   type:        { mode: 'any', values: [] },
   programs:    { mode: 'any', exact: '', min: '', max: '' },
   brand:       { mode: 'any', values: [] },
@@ -4165,9 +4163,6 @@ function aiTriggerText(param) {
   } else if (param === 'daypart') {
     if (p.mode === 'all') return 'All';
     if (p.mode === 'custom' && p.values.length > 0) return p.values.join(', ');
-  } else if (param === 'channels') {
-    if (p.mode === 'all') return 'All';
-    if (p.mode === 'custom' && p.values.length > 0) return p.values.join(', ');
   } else if (param === 'type') {
     if (p.mode === 'all') return 'All';
     if (p.mode === 'custom' && p.values.length > 0) return p.values.join(', ');
@@ -4193,7 +4188,6 @@ var AI_PLACEHOLDERS = {
   budget:      'Select Budget',
   impressions: 'Select Number',
   daypart:     'Select Daypart',
-  channels:    'Select Channels',
   type:        'Select Type',
   programs:    'Select Shows',
   brand:       'Select Brand Safety',
@@ -4202,42 +4196,11 @@ var AI_PLACEHOLDERS = {
   dates:       'Select Dates'
 };
 
-// ── CTV / OLV — channels depend on selected inventory Type ────────────────────
-var CTV_EXTRA_CHANNELS = ['NBCU', 'WBD', 'Scripps', 'Fox', 'Paramount'];
-
-function _mp2TypeHasCTV() {
-  var t = mp2AiParams.type;
-  return t.mode === 'all' || (t.mode === 'custom' && t.values.indexOf('CTV') >= 0);
-}
-
-function _mp2ChannelsDisabled() {
-  var t = mp2AiParams.type;
-  return t.mode === 'custom' && t.values.length === 1 && t.values[0] === 'OLV';
-}
-
-function _mp2ChannelsList() {
-  var base = INV_PROGRAMS.map(function(x){ return x.channel; }).filter(function(v,i,a){ return a.indexOf(v)===i; });
-  if (_mp2TypeHasCTV()) {
-    CTV_EXTRA_CHANNELS.forEach(function(c) { if (base.indexOf(c) < 0) base.push(c); });
-  }
-  return base.sort();
-}
-
-function _mp2SyncChannelsWithType() {
-  if (_mp2ChannelsDisabled() && mp2AiParams.channels.values.length) {
-    mp2AiParams.channels = { mode: 'any', values: [] };
-  }
-  aiUpdateTrigger('channels');
-}
-
 function aiTriggerHtml(param) {
   var val  = aiTriggerText(param);
   var set  = val !== '…';
   var label = set ? val : (AI_PLACEHOLDERS[param] || '…');
-  var disabled = param === 'channels' && _mp2ChannelsDisabled();
-  var cls = 'ai-trigger' + (set ? ' ai-trigger--set' : '') + (disabled ? ' ai-trigger--disabled' : '');
-  var click = disabled ? '' : ' onclick="aiOpenDropdown(\'' + param + '\',this)"';
-  return '<span class="' + cls + '" id="ai-trigger-' + param + '"' + click + ' title="' + (disabled ? 'Not available for OLV' : '') + '">' + label + '</span>';
+  return '<span class="ai-trigger' + (set ? ' ai-trigger--set' : '') + '" id="ai-trigger-' + param + '" onclick="aiOpenDropdown(\'' + param + '\',this)">' + label + '</span>';
 }
 
 function aiUpdateTrigger(param) {
@@ -4245,12 +4208,8 @@ function aiUpdateTrigger(param) {
   if (!el) return;
   var val  = aiTriggerText(param);
   var set  = val !== '…';
-  var disabled = param === 'channels' && _mp2ChannelsDisabled();
   el.textContent = set ? val : (AI_PLACEHOLDERS[param] || '…');
-  el.className   = 'ai-trigger' + (set ? ' ai-trigger--set' : '') + (disabled ? ' ai-trigger--disabled' : '');
-  el.title = disabled ? 'Not available for OLV' : '';
-  if (disabled) el.removeAttribute('onclick');
-  else el.setAttribute('onclick', "aiOpenDropdown('" + param + "',this)");
+  el.className   = 'ai-trigger' + (set ? ' ai-trigger--set' : '');
 }
 
 // ── AI dropdown ───────────────────────────────────────────────────────────────
@@ -4316,7 +4275,6 @@ var AI_PARAM_DEFAULTS = {
   budget:      { noBudget: false, min: 0, max: 1000000, exact: '' },
   impressions: { noEstimate: false, min: 0, max: 10000000, exact: '' },
   daypart:     { mode: 'any', values: [] },
-  channels:    { mode: 'any', values: [] },
   type:        { mode: 'any', values: [] },
   programs:    { mode: 'any', exact: '', min: '', max: '' },
   brand:       { mode: 'any', values: [] },
@@ -4340,7 +4298,6 @@ function aiDdReset(param) {
     if (label)  label.textContent = _mp2FmtWindowSecs(120);
   }
   aiUpdateTrigger(param);
-  if (param === 'type') _mp2SyncChannelsWithType();
   var dd = document.getElementById('ai-global-dd');
   if (dd) dd.innerHTML = aiDdContent(param);
   if (param === 'window') mp2SliderFill(120);
@@ -4359,7 +4316,7 @@ function aiDdContent(param) {
   function modeSeg(opts) {
     return '<div style="display:flex;gap:2px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:2px;margin-bottom:10px">'
       + opts.map(function(o) {
-          var act = (param === 'daypart' || param === 'channels')
+          var act = (param === 'daypart')
             ? (o.val === 'any' ? p.mode === 'any' : p.mode !== 'any' && p.dir === o.val)
             : p.mode === o.val;
           return '<button class="ai-mode-btn' + (act ? ' ai-mode-btn--act' : '') + '" onclick="aiDdDo(\'' + param + '\',\'' + o.val + '\')">' + o.label + '</button>';
@@ -4469,27 +4426,6 @@ function aiDdContent(param) {
           var chk = p.values.indexOf(v) >= 0;
           return '<label style="' + ROW + '">'
             + '<input type="checkbox" value="' + v + '"' + (chk ? ' checked' : '') + ' style="accent-color:#e11d8f;width:14px;height:14px;flex-shrink:0" onchange="aiDaypartItem(\'' + v + '\',this.checked)">'
-            + v
-            + '</label>';
-        }).join('')
-      + '</div>'
-      + aiDdOkBtn(param);
-  }
-
-  if (param === 'channels') {
-    var chItems = _mp2ChannelsList();
-    var chAllChecked = p.mode === 'all';
-    var CH_ROW = 'display:flex;align-items:center;gap:9px;padding:5px 2px;cursor:pointer;font-size:13px;color:var(--text);user-select:none;border-radius:5px;';
-    return '<div style="display:flex;flex-direction:column">'
-      + '<label style="' + CH_ROW + 'font-weight:500;margin-bottom:2px">'
-      +   '<input type="checkbox"' + (chAllChecked ? ' checked' : '') + ' style="accent-color:#e11d8f;width:14px;height:14px;flex-shrink:0" onchange="aiChannelsAll()">'
-      +   'All'
-      + '</label>'
-      + '<div style="height:1px;background:var(--border);margin:2px 0 4px"></div>'
-      + chItems.map(function(v) {
-          var chk = p.values.indexOf(v) >= 0;
-          return '<label style="' + CH_ROW + '">'
-            + '<input type="checkbox" value="' + v + '"' + (chk ? ' checked' : '') + ' style="accent-color:#e11d8f;width:14px;height:14px;flex-shrink:0" onchange="aiChannelsItem(\'' + v + '\',this.checked)">'
             + v
             + '</label>';
         }).join('')
@@ -4810,32 +4746,10 @@ function aiDaypartItem(val, checked) {
   if (dd) dd.innerHTML = aiDdContent('daypart');
 }
 
-function aiChannelsAll() {
-  mp2AiParams.channels.mode = 'all';
-  mp2AiParams.channels.values = [];
-  aiUpdateTrigger('channels');
-  var dd = document.getElementById('ai-global-dd');
-  if (dd) dd.innerHTML = aiDdContent('channels');
-}
-
-function aiChannelsItem(val, checked) {
-  var p = mp2AiParams.channels;
-  if (checked) {
-    if (p.values.indexOf(val) < 0) p.values.push(val);
-  } else {
-    p.values = p.values.filter(function(v) { return v !== val; });
-  }
-  p.mode = p.values.length > 0 ? 'custom' : 'any';
-  aiUpdateTrigger('channels');
-  var dd = document.getElementById('ai-global-dd');
-  if (dd) dd.innerHTML = aiDdContent('channels');
-}
-
 function aiTypeAll() {
   mp2AiParams.type.mode = 'all';
   mp2AiParams.type.values = [];
   aiUpdateTrigger('type');
-  _mp2SyncChannelsWithType();
   var dd = document.getElementById('ai-global-dd');
   if (dd) dd.innerHTML = aiDdContent('type');
 }
@@ -4849,7 +4763,6 @@ function aiTypeItem(val, checked) {
   }
   p.mode = p.values.length > 0 ? 'custom' : 'any';
   aiUpdateTrigger('type');
-  _mp2SyncChannelsWithType();
   var dd = document.getElementById('ai-global-dd');
   if (dd) dd.innerHTML = aiDdContent('type');
 }
@@ -4914,7 +4827,7 @@ function aiWindowSlide(val) {
 
 function aiDdDo(param, val) {
   var p = mp2AiParams[param];
-  if (param === 'daypart' || param === 'channels') {
+  if (param === 'daypart') {
     if (val === 'any') { p.mode = 'any'; p.values = []; }
     else               { p.mode = 'set'; p.dir = val; }
   } else {
@@ -4964,8 +4877,7 @@ function csTx2BuildAIParamsPanel() {
     + '<div style="font-size:15px;line-height:2;color:var(--text);margin-bottom:32px">'
     +   'The budget for my media plan is ' + aiTriggerHtml('budget')
     +   ' and I want to deliver ' + aiTriggerHtml('impressions') + ' impressions per day. '
-    +   'The Channels should be ' + aiTriggerHtml('channels')
-    +   ' and the type ' + aiTriggerHtml('type') + '. '
+    +   'I want to target ' + aiTriggerHtml('type') + ' Inventory. '
     +   'My Brand Safety parameters are ' + aiTriggerHtml('brand') + '. '
     +   'Use ' + aiTriggerHtml('score') + ' Match Score.'
     + '</div>'
