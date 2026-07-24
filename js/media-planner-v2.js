@@ -4201,11 +4201,42 @@ var AI_PLACEHOLDERS = {
   dates:       'Select Dates'
 };
 
+// ── CTV / OLV — channels depend on selected inventory Type ────────────────────
+var CTV_EXTRA_CHANNELS = ['NBCU', 'WBD', 'Scripps', 'Fox', 'Paramount'];
+
+function _mp2TypeHasCTV() {
+  var t = mp2AiParams.type;
+  return t.mode === 'all' || (t.mode === 'custom' && t.values.indexOf('CTV') >= 0);
+}
+
+function _mp2ChannelsDisabled() {
+  var t = mp2AiParams.type;
+  return t.mode === 'custom' && t.values.length === 1 && t.values[0] === 'OLV';
+}
+
+function _mp2ChannelsList() {
+  var base = INV_PROGRAMS.map(function(x){ return x.channel; }).filter(function(v,i,a){ return a.indexOf(v)===i; });
+  if (_mp2TypeHasCTV()) {
+    CTV_EXTRA_CHANNELS.forEach(function(c) { if (base.indexOf(c) < 0) base.push(c); });
+  }
+  return base.sort();
+}
+
+function _mp2SyncChannelsWithType() {
+  if (_mp2ChannelsDisabled() && mp2AiParams.channels.values.length) {
+    mp2AiParams.channels = { mode: 'any', values: [] };
+  }
+  aiUpdateTrigger('channels');
+}
+
 function aiTriggerHtml(param) {
   var val  = aiTriggerText(param);
   var set  = val !== '…';
   var label = set ? val : (AI_PLACEHOLDERS[param] || '…');
-  return '<span class="ai-trigger' + (set ? ' ai-trigger--set' : '') + '" id="ai-trigger-' + param + '" onclick="aiOpenDropdown(\'' + param + '\',this)">' + label + '</span>';
+  var disabled = param === 'channels' && _mp2ChannelsDisabled();
+  var cls = 'ai-trigger' + (set ? ' ai-trigger--set' : '') + (disabled ? ' ai-trigger--disabled' : '');
+  var click = disabled ? '' : ' onclick="aiOpenDropdown(\'' + param + '\',this)"';
+  return '<span class="' + cls + '" id="ai-trigger-' + param + '"' + click + ' title="' + (disabled ? 'Not available for OLV' : '') + '">' + label + '</span>';
 }
 
 function aiUpdateTrigger(param) {
@@ -4213,8 +4244,12 @@ function aiUpdateTrigger(param) {
   if (!el) return;
   var val  = aiTriggerText(param);
   var set  = val !== '…';
+  var disabled = param === 'channels' && _mp2ChannelsDisabled();
   el.textContent = set ? val : (AI_PLACEHOLDERS[param] || '…');
-  el.className   = 'ai-trigger' + (set ? ' ai-trigger--set' : '');
+  el.className   = 'ai-trigger' + (set ? ' ai-trigger--set' : '') + (disabled ? ' ai-trigger--disabled' : '');
+  el.title = disabled ? 'Not available for OLV' : '';
+  if (disabled) el.removeAttribute('onclick');
+  else el.setAttribute('onclick', "aiOpenDropdown('" + param + "',this)");
 }
 
 // ── AI dropdown ───────────────────────────────────────────────────────────────
@@ -4304,6 +4339,7 @@ function aiDdReset(param) {
     mp2SliderFill(120);
   }
   aiUpdateTrigger(param);
+  if (param === 'type') _mp2SyncChannelsWithType();
   var dd = document.getElementById('ai-global-dd');
   if (dd) dd.innerHTML = aiDdContent(param);
 }
@@ -4439,7 +4475,7 @@ function aiDdContent(param) {
   }
 
   if (param === 'channels') {
-    var chItems = INV_PROGRAMS.map(function(x){ return x.channel; }).filter(function(v,i,a){ return a.indexOf(v)===i; }).sort();
+    var chItems = _mp2ChannelsList();
     var chAllChecked = p.mode === 'all';
     var CH_ROW = 'display:flex;align-items:center;gap:9px;padding:5px 2px;cursor:pointer;font-size:13px;color:var(--text);user-select:none;border-radius:5px;';
     return '<div style="display:flex;flex-direction:column">'
@@ -4804,6 +4840,7 @@ function aiTypeAll() {
   mp2AiParams.type.mode = 'all';
   mp2AiParams.type.values = [];
   aiUpdateTrigger('type');
+  _mp2SyncChannelsWithType();
   var dd = document.getElementById('ai-global-dd');
   if (dd) dd.innerHTML = aiDdContent('type');
 }
@@ -4817,6 +4854,7 @@ function aiTypeItem(val, checked) {
   }
   p.mode = p.values.length > 0 ? 'custom' : 'any';
   aiUpdateTrigger('type');
+  _mp2SyncChannelsWithType();
   var dd = document.getElementById('ai-global-dd');
   if (dd) dd.innerHTML = aiDdContent('type');
 }
