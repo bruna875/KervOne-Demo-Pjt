@@ -119,11 +119,10 @@ body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);font-size:13p
 .urole{font-size:11px;color:var(--faint);white-space:nowrap}
 .logoutbtn{margin-left:auto;cursor:pointer;color:var(--faint);transition:color .15s;flex-shrink:0}
 .logoutbtn:hover{color:var(--accent)}
-.sbcompliance{padding:9px 12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px;flex-shrink:0}
-.compbadge{display:flex;align-items:center;gap:8px;overflow:hidden}
-.compbadge-icon{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted)}
-.compbadge-label{font-size:11px;color:var(--faint);white-space:nowrap;transition:opacity var(--tr)}
-.sb.col .compbadge-label{opacity:0}
+.sbcompliance{padding:10px 12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:12px;flex-shrink:0}
+.compbadge-img{height:28px;width:auto;flex-shrink:0;object-fit:contain}
+.sb.col .sbcompliance{flex-direction:column;gap:8px;padding:8px}
+.sb.col .compbadge-img{height:20px}
 .togbtn{position:absolute;right:-11px;top:50%;transform:translateY(-50%);width:22px;height:22px;background:var(--surface);border:1px solid var(--border);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 1px 6px rgba(0,0,0,.07)}
 
 /* ── Main area ── */
