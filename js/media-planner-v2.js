@@ -4275,9 +4275,43 @@ function aiCloseDropdown() {
   document.removeEventListener('click', _aiDdOutside);
 }
 
-function aiDdOkBtn() {
-  return '<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">'
-    + '<button onclick="aiCloseDropdown()" style="width:100%;height:30px;border-radius:7px;border:1px solid var(--border-md);background:var(--surface);color:var(--text);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .12s" onmouseenter="this.style.background=\'var(--bg)\'" onmouseleave="this.style.background=\'var(--surface)\'">OK</button>'
+var AI_PARAM_DEFAULTS = {
+  budget:      { noBudget: false, min: 0, max: 1000000, exact: '' },
+  impressions: { noEstimate: false, min: 0, max: 10000000, exact: '' },
+  daypart:     { mode: 'any', values: [] },
+  channels:    { mode: 'any', values: [] },
+  type:        { mode: 'any', values: [] },
+  programs:    { mode: 'any', exact: '', min: '', max: '' },
+  brand:       { mode: 'any', values: [] },
+  score:       { mode: 'all', values: [] },
+  window:      { mode: 'any', secs: 120 },
+  dates:       { start: '', end: '' }
+};
+
+function aiDdReset(param) {
+  var def = AI_PARAM_DEFAULTS[param];
+  if (!def) return;
+  var fresh = {};
+  for (var k in def) { fresh[k] = Array.isArray(def[k]) ? def[k].slice() : def[k]; }
+  if (param === 'dates') { fresh.viewMonth = new Date().getMonth(); fresh.viewYear = new Date().getFullYear(); }
+  mp2AiParams[param] = fresh;
+  if (param === 'window') {
+    mp2LookbackSecs = 120;
+    var slider = document.getElementById('mp2-lookback-slider');
+    var label  = document.getElementById('mp2-lookback-label');
+    if (slider) slider.value = 120;
+    if (label)  label.textContent = _mp2FmtWindowSecs(120);
+    mp2SliderFill(120);
+  }
+  aiUpdateTrigger(param);
+  var dd = document.getElementById('ai-global-dd');
+  if (dd) dd.innerHTML = aiDdContent(param);
+}
+
+function aiDdOkBtn(param) {
+  return '<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px;display:flex;align-items:center;justify-content:space-between;gap:8px">'
+    + '<button onclick="aiDdReset(\'' + param + '\')" style="background:none;border:none;padding:2px 0;cursor:pointer;font-size:11px;color:var(--faint);font-family:inherit;transition:color .12s" onmouseenter="this.style.color=\'var(--muted)\'" onmouseleave="this.style.color=\'var(--faint)\'">Reset</button>'
+    + '<button onclick="aiCloseDropdown()" style="height:30px;padding:0 16px;border-radius:7px;border:1px solid var(--border-md);background:var(--surface);color:var(--text);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .12s" onmouseenter="this.style.background=\'var(--bg)\'" onmouseleave="this.style.background=\'var(--surface)\'">OK</button>'
     + '</div>';
 }
 
@@ -4335,7 +4369,7 @@ function aiDdContent(param) {
       +   '<input type="checkbox"' + (p.noBudget ? ' checked' : '') + ' style="accent-color:#e11d8f;width:13px;height:13px" onchange="mp2AiParams.budget.noBudget=this.checked;aiUpdateTrigger(\'budget\');var dd=document.getElementById(\'ai-global-dd\');if(dd)dd.innerHTML=aiDdContent(\'budget\')">'
       +   "I don't have a budget"
       + '</label>'
-      + aiDdOkBtn();
+      + aiDdOkBtn(param);
   }
 
   if (param === 'impressions') {
@@ -4364,7 +4398,7 @@ function aiDdContent(param) {
       +   '<input type="checkbox"' + (p.noEstimate ? ' checked' : '') + ' style="accent-color:#e11d8f;width:13px;height:13px" onchange="mp2AiParams.impressions.noEstimate=this.checked;aiUpdateTrigger(\'impressions\');var dd=document.getElementById(\'ai-global-dd\');if(dd)dd.innerHTML=aiDdContent(\'impressions\')">'
       +   'No estimate impressions'
       + '</label>'
-      + aiDdOkBtn();
+      + aiDdOkBtn(param);
   }
 
   if (param === 'programs') {
@@ -4380,7 +4414,7 @@ function aiDdContent(param) {
           + '<input type="number" class="ai-input" placeholder="Max" value="' + (p.max||'') + '" style="flex:1" oninput="mp2AiParams.programs.max=this.value;aiUpdateTrigger(\'programs\')">'
           + '</div>'
         : '')
-      + aiDdOkBtn();
+      + aiDdOkBtn(param);
   }
 
   if (param === 'daypart') {
@@ -4401,7 +4435,7 @@ function aiDdContent(param) {
             + '</label>';
         }).join('')
       + '</div>'
-      + aiDdOkBtn();
+      + aiDdOkBtn(param);
   }
 
   if (param === 'channels') {
@@ -4422,7 +4456,7 @@ function aiDdContent(param) {
             + '</label>';
         }).join('')
       + '</div>'
-      + aiDdOkBtn();
+      + aiDdOkBtn(param);
   }
 
   if (param === 'type') {
@@ -4443,7 +4477,7 @@ function aiDdContent(param) {
             + '</label>';
         }).join('')
       + '</div>'
-      + aiDdOkBtn();
+      + aiDdOkBtn(param);
   }
 
   if (param === 'brand') {
@@ -4464,7 +4498,7 @@ function aiDdContent(param) {
             + '</label>';
         }).join('')
       + '</div>'
-      + aiDdOkBtn();
+      + aiDdOkBtn(param);
   }
 
   if (param === 'score') {
@@ -4485,7 +4519,7 @@ function aiDdContent(param) {
             + '</label>';
         }).join('')
       + '</div>'
-      + aiDdOkBtn();
+      + aiDdOkBtn(param);
   }
 
   if (param === 'window') {
@@ -4500,7 +4534,7 @@ function aiDdContent(param) {
             + '</label>';
         }).join('')
       + '</div>'
-      + aiDdOkBtn();
+      + aiDdOkBtn(param);
   }
   if (param === 'dates') {
     var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -4579,7 +4613,7 @@ function aiDdContent(param) {
     if (rem > 0) for (var j = 1; j <= 7 - rem; j++) { renderCell(j, '', false); }
 
     html += '</div></div>';
-    return html + aiDdOkBtn();
+    return html + aiDdOkBtn(param);
   }
   return '';
 }
