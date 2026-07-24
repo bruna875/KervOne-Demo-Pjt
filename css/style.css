@@ -119,11 +119,11 @@ body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);font-size:13p
 .urole{font-size:11px;color:var(--faint);white-space:nowrap}
 .logoutbtn{margin-left:auto;cursor:pointer;color:var(--faint);transition:color .15s;flex-shrink:0}
 .logoutbtn:hover{color:var(--accent)}
-.sbcompliance{padding:10px 12px;border-top:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:7px;flex-shrink:0}
-.sbcompliance-label{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);white-space:nowrap}
-.sbcompliance-logos{display:flex;align-items:center;justify-content:center;gap:12px}
-.compbadge-img{height:28px;width:auto;flex-shrink:0;object-fit:contain}
-.sb.col .sbcompliance{padding:8px}
+.sbcompliance{padding:9px 12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-start;gap:8px;flex-shrink:0}
+.sbcompliance-label{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);white-space:nowrap;flex-shrink:0}
+.sbcompliance-logos{display:flex;align-items:center;gap:8px}
+.compbadge-img{height:24px;width:auto;flex-shrink:0;object-fit:contain}
+.sb.col .sbcompliance{flex-direction:column;padding:8px}
 .sb.col .sbcompliance-label{display:none}
 .sb.col .sbcompliance-logos{flex-direction:column;gap:8px}
 .sb.col .compbadge-img{height:20px}
