@@ -12,21 +12,32 @@
 
 <!-- ── Login ── -->
 <div id="auth">
-  <div class="acard">
-    <div class="alogo">
-      <div class="amark" style="display:flex;align-items:center;justify-content:center;background:var(--accent);border-radius:8px"><svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="13" r="6" fill="white"/><path d="M5 30c0-6.075 4.925-11 11-11s11 4.925 11 11" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></div>
-      <span class="alogo-text">KERV One Demo</span>
+  <div class="authgrid">
+    <div class="auth-left">
+      <div class="auth-brand">
+        <div class="amark" style="display:flex;align-items:center;justify-content:center;background:var(--accent);border-radius:6px;width:24px;height:24px;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="13" r="6" fill="white"/><path d="M5 30c0-6.075 4.925-11 11-11s11 4.925 11 11" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+        <span class="auth-brand-text">KERV One Demo</span>
+      </div>
+      <div class="auth-formwrap">
+        <div class="auth-forminner">
+          <div class="atitle">Sign in</div>
+          <div class="asub">Enter your credentials to continue</div>
+          <div class="fwrap"><div class="flabel">Username</div><input class="finput" id="em" type="text" value="bruna" placeholder="username"/></div>
+          <div class="fwrap"><div class="flabel">Password</div><input class="finput" id="pw" type="password" value="Bruna2026" placeholder="••••••••"/></div>
+          <div class="aerr" id="err"></div>
+          <button class="abtn" id="loginBtn">Sign in</button>
+          <div class="demo-creds">
+            <div class="demo-creds-label">Credentials</div>
+            <div><strong>Username:</strong> bruna</div>
+            <div><strong>Password:</strong> Bruna2026</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="atitle">Sign in</div>
-    <div class="asub">Enter your credentials to continue</div>
-    <div class="fwrap"><div class="flabel">Username</div><input class="finput" id="em" type="text" value="bruna" placeholder="username"/></div>
-    <div class="fwrap"><div class="flabel">Password</div><input class="finput" id="pw" type="password" value="Bruna2026" placeholder="••••••••"/></div>
-    <div class="aerr" id="err"></div>
-    <button class="abtn" id="loginBtn">Sign in</button>
-    <div class="demo-creds">
-      <div class="demo-creds-label">Credentials</div>
-      <div><strong>Username:</strong> bruna</div>
-      <div><strong>Password:</strong> Bruna2026</div>
+    <div class="auth-right">
+      <div class="auth-right-inner">
+        <img src="/kerv-one-favicon.png" alt="" class="auth-right-mark"/>
+      </div>
     </div>
   </div>
 </div>
@@ -48,6 +59,16 @@
         </div>
         <div class="logoutbtn" id="logoutBtn" title="Sign out">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6 3H3v10h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 5l3 3-3 3M13 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="sbcompliance" id="sbCompliance">
+        <div class="compbadge" title="SOC 2 Compliant">
+          <svg class="compbadge-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span class="compbadge-label">SOC 2 Compliant</span>
+        </div>
+        <div class="compbadge" title="TPN Gold Status">
+          <svg class="compbadge-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span class="compbadge-label">TPN Gold Status</span>
         </div>
       </div>
     </div>

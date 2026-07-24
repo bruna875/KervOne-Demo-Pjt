@@ -843,7 +843,7 @@ function login() {
 
 function logout() {
   document.getElementById('app').classList.remove('show');
-  document.getElementById('auth').style.display = 'flex';
+  document.getElementById('auth').style.display = 'block';
   setTimeout(function() { document.getElementById('auth').classList.remove('gone'); }, 10);
   document.getElementById('pw').value = '';
   document.getElementById('err').textContent = '';
@@ -862,8 +862,4 @@ document.getElementById('wip-ico-0').innerHTML = ico.sdtform;
 document.getElementById('wip-ico-1').innerHTML = ico.taxonomy;
 document.getElementById('wip-ico-2').innerHTML = ico.showcase;
 
-// Auto-login
-document.getElementById('em').value = 'bruna';
-document.getElementById('pw').value = 'Bruna2026';
-login();
 updateOrgMgmtVisibility();
