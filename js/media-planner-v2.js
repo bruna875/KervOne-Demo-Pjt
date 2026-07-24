@@ -1834,23 +1834,7 @@ function mp2ShowUpload() {
     +           '</div>'
     +         '</div>'
     +         '<div id="tx2-input-area" style="margin-bottom:10px">' + inputArea('video') + '</div>'
-    +         '<div style="margin-bottom:0">'
-    +           '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">'
-    +             '<div style="display:flex;align-items:center;gap:4px">'
-    +               '<span style="font-size:10px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.6px">Lookback Window</span>'
-    +               '<span style="position:relative;display:inline-flex;align-items:center" onmouseenter="this.querySelector(\'.mp2-lbw-tt\').style.display=\'block\'" onmouseleave="this.querySelector(\'.mp2-lbw-tt\').style.display=\'none\'">'
-    +                 '<svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="color:var(--faint);cursor:default"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 6.5v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="7" cy="5" r=".6" fill="currentColor"/></svg>'
-    +                 '<span class="mp2-lbw-tt" style="display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);width:220px;background:#1e293b;color:#e2e8f0;font-size:10px;line-height:1.5;padding:7px 10px;border-radius:7px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:999;pointer-events:none">The lookback window indicates the time before an Ad Break used to qualify the scene as a Moment</span>'
-    +               '</span>'
-    +             '</div>'
-    +             '<span id="mp2-lookback-label" style="font-size:11px;font-weight:600;color:var(--accent)">' + _mp2FmtWindowSecs(mp2LookbackSecs) + '</span>'
-    +           '</div>'
-    +           '<input type="range" id="mp2-lookback-slider" min="30" max="300" value="' + mp2LookbackSecs + '" step="15" oninput="mp2UpdateLookback(this.value)" style="accent-color:var(--accent)">'
-    +           '<div style="display:flex;justify-content:space-between;margin-top:1px">'
-    +             '<span style="font-size:9px;color:var(--faint)">30 sec</span>'
-    +             '<span style="font-size:9px;color:var(--faint)">5 min</span>'
-    +           '</div>'
-    +         '</div>'
+    +         _mp2LookbackSliderHtml('mp2-lookback-slider', 'mp2-lookback-label', 'mp2UpdateLookback', mp2LookbackSecs)
     +       '</div>'
 
     +     '</div>'
@@ -2805,19 +2789,18 @@ function mp2InjectSliderStyles() {
   var s = document.createElement('style');
   s.id = 'mp2-slider-styles';
   s.textContent =
-    '#mp2-lookback-slider{-webkit-appearance:none;appearance:none;outline:none;border:none;width:100%;height:4px;margin:4px 0;cursor:pointer;border-radius:2px}'
-    + '#mp2-lookback-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:#ED005E;cursor:pointer;border:none;outline:none;box-shadow:0 0 0 2px rgba(237,0,94,.15)}'
-    + '#mp2-lookback-slider::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#ED005E;cursor:pointer;border:none;outline:none}'
-    + '#mp2-lookback-slider::-moz-range-track{height:4px;background:#e2e8f0;border-radius:2px;border:none}'
-    + '#mp2-lookback-slider::-moz-range-progress{height:4px;background:#ED005E;border-radius:2px}';
+    '.mp2-lb-slider{-webkit-appearance:none;appearance:none;outline:none;border:none;width:100%;height:4px;margin:4px 0;cursor:pointer;border-radius:2px}'
+    + '.mp2-lb-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:#ED005E;cursor:pointer;border:none;outline:none;box-shadow:0 0 0 2px rgba(237,0,94,.15)}'
+    + '.mp2-lb-slider::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#ED005E;cursor:pointer;border:none;outline:none}'
+    + '.mp2-lb-slider::-moz-range-track{height:4px;background:#e2e8f0;border-radius:2px;border:none}'
+    + '.mp2-lb-slider::-moz-range-progress{height:4px;background:#ED005E;border-radius:2px}';
   document.head.appendChild(s);
 }
 
 function mp2SliderFill(val) {
-  var el = document.getElementById('mp2-lookback-slider');
-  if (!el) return;
   var pct = (val - 30) / (300 - 30) * 100;
-  el.style.background = 'linear-gradient(to right,#ED005E 0%,#ED005E ' + pct + '%,#e2e8f0 ' + pct + '%,#e2e8f0 100%)';
+  var grad = 'linear-gradient(to right,#ED005E 0%,#ED005E ' + pct + '%,#e2e8f0 ' + pct + '%,#e2e8f0 100%)';
+  document.querySelectorAll('.mp2-lb-slider').forEach(function(el) { el.style.background = grad; });
 }
 
 function mp2UpdateLookback(val) {
@@ -2826,6 +2809,12 @@ function mp2UpdateLookback(val) {
   mp2AiParams.window.secs = mp2LookbackSecs;
   var label = document.getElementById('mp2-lookback-label');
   if (label) label.textContent = _mp2FmtWindowSecs(mp2LookbackSecs);
+  // Keep Step 2's "Select Window" dropdown/trigger in sync if already rendered
+  var ddSlider = document.getElementById('ai-window-slider');
+  var ddLabel  = document.getElementById('ai-window-label');
+  if (ddSlider) ddSlider.value = mp2LookbackSecs;
+  if (ddLabel)  ddLabel.textContent = _mp2FmtWindowSecs(mp2LookbackSecs);
+  if (typeof aiUpdateTrigger === 'function') aiUpdateTrigger('window');
   mp2SliderFill(mp2LookbackSecs);
 }
 
@@ -4132,6 +4121,27 @@ function _mp2FmtWindowSecs(s) {
   return m > 0 && r > 0 ? m + ' min ' + r + ' sec' : m > 0 ? m + ' min' : s + ' sec';
 }
 
+// Shared Lookback Window slider markup — used identically on Step 3 and in the Step 2 "Select Window" dropdown
+function _mp2LookbackSliderHtml(sliderId, labelId, oninputFn, secs) {
+  return '<div style="margin-bottom:0">'
+    +   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">'
+    +     '<div style="display:flex;align-items:center;gap:4px">'
+    +       '<span style="font-size:10px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.6px">Lookback Window</span>'
+    +       '<span style="position:relative;display:inline-flex;align-items:center" onmouseenter="this.querySelector(\'.mp2-lbw-tt\').style.display=\'block\'" onmouseleave="this.querySelector(\'.mp2-lbw-tt\').style.display=\'none\'">'
+    +         '<svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="color:var(--faint);cursor:default"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M7 6.5v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="7" cy="5" r=".6" fill="currentColor"/></svg>'
+    +         '<span class="mp2-lbw-tt" style="display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);width:220px;background:#1e293b;color:#e2e8f0;font-size:10px;line-height:1.5;padding:7px 10px;border-radius:7px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:999;pointer-events:none">The lookback window indicates the time before an Ad Break used to qualify the scene as a Moment</span>'
+    +       '</span>'
+    +     '</div>'
+    +     '<span id="' + labelId + '" style="font-size:11px;font-weight:600;color:var(--accent)">' + _mp2FmtWindowSecs(secs) + '</span>'
+    +   '</div>'
+    +   '<input type="range" class="mp2-lb-slider" id="' + sliderId + '" min="30" max="300" value="' + secs + '" step="15" oninput="' + oninputFn + '(this.value)" style="accent-color:var(--accent)">'
+    +   '<div style="display:flex;justify-content:space-between;margin-top:1px">'
+    +     '<span style="font-size:9px;color:var(--faint)">30 sec</span>'
+    +     '<span style="font-size:9px;color:var(--faint)">5 min</span>'
+    +   '</div>'
+    + '</div>';
+}
+
 // ── AI trigger helpers ─────────────────────────────────────────────────────
 
 function aiTriggerText(param) {
@@ -4266,6 +4276,7 @@ function aiOpenDropdown(param, triggerEl) {
   var ddW = param === 'dates' ? 294 : 260;
   dd.style.cssText = 'position:fixed;z-index:9999;background:var(--surface);border:1px solid var(--border-md);border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.14);padding:14px;width:' + ddW + 'px;box-sizing:border-box;visibility:hidden;display:block;overflow-y:auto';
   dd.innerHTML = aiDdContent(param);
+  if (param === 'window') mp2SliderFill(mp2LookbackSecs);
 
   var rect = triggerEl.getBoundingClientRect();
   var vw   = window.innerWidth;
@@ -4336,12 +4347,12 @@ function aiDdReset(param) {
     var label  = document.getElementById('mp2-lookback-label');
     if (slider) slider.value = 120;
     if (label)  label.textContent = _mp2FmtWindowSecs(120);
-    mp2SliderFill(120);
   }
   aiUpdateTrigger(param);
   if (param === 'type') _mp2SyncChannelsWithType();
   var dd = document.getElementById('ai-global-dd');
   if (dd) dd.innerHTML = aiDdContent(param);
+  if (param === 'window') mp2SliderFill(120);
 }
 
 function aiDdOkBtn(param) {
@@ -4559,16 +4570,9 @@ function aiDdContent(param) {
   }
 
   if (param === 'window') {
-    var wnOpts = [30, 60, 120, 180, 300];
-    var WN_ROW = 'display:flex;align-items:center;gap:9px;padding:5px 2px;cursor:pointer;font-size:13px;color:var(--text);user-select:none;border-radius:5px;';
-    return '<div style="display:flex;flex-direction:column">'
-      + wnOpts.map(function(s) {
-          var chk = p.mode === 'set' && p.secs === s;
-          return '<label style="' + WN_ROW + '">'
-            + '<input type="radio" name="ai-window-radio" value="' + s + '"' + (chk ? ' checked' : '') + ' style="accent-color:#e11d8f;width:14px;height:14px;flex-shrink:0" onchange="aiWindowSelect(' + s + ')">'
-            + _mp2FmtWindowSecs(s)
-            + '</label>';
-        }).join('')
+    var wSecs = (p.mode === 'set' && p.secs) ? p.secs : mp2LookbackSecs;
+    return '<div style="width:220px">'
+      + _mp2LookbackSliderHtml('ai-window-slider', 'ai-window-label', 'aiWindowSlide', wSecs)
       + '</div>'
       + aiDdOkBtn(param);
   }
@@ -4901,13 +4905,14 @@ function aiScoreItem(val, checked) {
   if (dd) dd.innerHTML = aiDdContent('score');
 }
 
-function aiWindowSelect(secs) {
+function aiWindowSlide(val) {
+  var secs = parseInt(val);
   mp2AiParams.window.mode = 'set';
   mp2AiParams.window.secs = secs;
   mp2LookbackSecs = secs;
+  var lbl = document.getElementById('ai-window-label');
+  if (lbl) lbl.textContent = _mp2FmtWindowSecs(secs);
   aiUpdateTrigger('window');
-  var dd = document.getElementById('ai-global-dd');
-  if (dd) dd.innerHTML = aiDdContent('window');
   // Keep Step 3's Lookback Window slider in sync if already rendered
   var slider = document.getElementById('mp2-lookback-slider');
   var label  = document.getElementById('mp2-lookback-label');
