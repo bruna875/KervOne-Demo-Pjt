@@ -79,7 +79,6 @@ function renderMediaPlannerV2() {
   setTimeout(function() {
     mp2TaxStep = 'upload'; mp2TaxInputType = 'video'; mp2TaxFileName = '';
     sdtInjectStyles();
-    mp2InjectSliderStyles();
     mp2SwitchHomeTab(mp2HomeTab, true); // restore correct tab without pushing history
   }, 0);
   var mp2PillTabs = [{id:'new-plan',label:'New Moments Match'},{id:'analyses',label:'Previous Moments Match',dividerBefore:true}];
@@ -2784,23 +2783,9 @@ function mp2FlightCalPick(dStr) {
   if (dd) dd.innerHTML = mp2FlightDdContent();
 }
 
-function mp2InjectSliderStyles() {
-  if (document.getElementById('mp2-slider-styles')) return;
-  var s = document.createElement('style');
-  s.id = 'mp2-slider-styles';
-  s.textContent =
-    '.mp2-lb-slider{-webkit-appearance:none;appearance:none;outline:none;border:none;width:100%;height:4px;margin:4px 0;cursor:pointer;border-radius:2px}'
-    + '.mp2-lb-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:#ED005E;cursor:pointer;border:none;outline:none;box-shadow:0 0 0 2px rgba(237,0,94,.15)}'
-    + '.mp2-lb-slider::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#ED005E;cursor:pointer;border:none;outline:none}'
-    + '.mp2-lb-slider::-moz-range-track{height:4px;background:#e2e8f0;border-radius:2px;border:none}'
-    + '.mp2-lb-slider::-moz-range-progress{height:4px;background:#ED005E;border-radius:2px}';
-  document.head.appendChild(s);
-}
-
 function mp2SliderFill(val) {
   var pct = (val - 30) / (300 - 30) * 100;
-  var grad = 'linear-gradient(to right,#ED005E 0%,#ED005E ' + pct + '%,#e2e8f0 ' + pct + '%,#e2e8f0 100%)';
-  document.querySelectorAll('.mp2-lb-slider').forEach(function(el) { el.style.background = grad; });
+  document.querySelectorAll('.mp2-lb-track').forEach(function(el) { el.style.right = (100 - pct) + '%'; });
 }
 
 function mp2UpdateLookback(val) {
@@ -4123,6 +4108,7 @@ function _mp2FmtWindowSecs(s) {
 
 // Shared Lookback Window slider markup — used identically on Step 3 and in the Step 2 "Select Window" dropdown
 function _mp2LookbackSliderHtml(sliderId, labelId, oninputFn, secs) {
+  var pct = (secs - 30) / (300 - 30) * 100;
   return '<div style="margin-bottom:0">'
     +   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">'
     +     '<div style="display:flex;align-items:center;gap:4px">'
@@ -4134,8 +4120,13 @@ function _mp2LookbackSliderHtml(sliderId, labelId, oninputFn, secs) {
     +     '</div>'
     +     '<span id="' + labelId + '" style="font-size:11px;font-weight:600;color:var(--accent)">' + _mp2FmtWindowSecs(secs) + '</span>'
     +   '</div>'
-    +   '<input type="range" class="mp2-lb-slider" id="' + sliderId + '" min="30" max="300" value="' + secs + '" step="15" oninput="' + oninputFn + '(this.value)" style="accent-color:var(--accent)">'
-    +   '<div style="display:flex;justify-content:space-between;margin-top:1px">'
+    +   '<div style="position:relative;height:28px;margin-bottom:4px">'
+    +     '<div style="position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);height:4px;background:var(--border);border-radius:2px">'
+    +       '<div class="mp2-lb-track" style="position:absolute;height:100%;border-radius:2px;background:linear-gradient(90deg,#e11d8f,#f43f5e);left:0;right:' + (100 - pct) + '%"></div>'
+    +     '</div>'
+    +     '<input type="range" class="ai-range" id="' + sliderId + '" min="30" max="300" value="' + secs + '" step="15" oninput="' + oninputFn + '(this.value)">'
+    +   '</div>'
+    +   '<div style="display:flex;justify-content:space-between">'
     +     '<span style="font-size:9px;color:var(--faint)">30 sec</span>'
     +     '<span style="font-size:9px;color:var(--faint)">5 min</span>'
     +   '</div>'
