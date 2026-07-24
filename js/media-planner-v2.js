@@ -1593,10 +1593,10 @@ function mp2BuildNewPlanAIPanel() {
     + '<div style="font-size:15px;line-height:2;color:var(--text);margin-bottom:32px;text-align:left">'
     +   'The budget for my media plan is ' + aiTriggerHtml('budget')
     +   ' and I want to deliver ' + aiTriggerHtml('impressions') + ' impressions per day. '
-    +   'The Channels should be ' + aiTriggerHtml('channels')
-    +   ' and the type ' + aiTriggerHtml('type') + '. '
+    +   'I want to target ' + aiTriggerHtml('type') + ' of Inventory, and the following channels '
+    +   aiTriggerHtml('channels') + '. '
     +   'My Brand Safety parameters are ' + aiTriggerHtml('brand') + '. '
-    +   'Use ' + aiTriggerHtml('score') + ' Match Score.'
+    +   'Use ' + aiTriggerHtml('score') + ' Match Score and a ' + aiTriggerHtml('window') + ' Lookback.'
     + '</div>'
 
     + '</div>'
@@ -1843,9 +1843,9 @@ function mp2ShowUpload() {
     +                 '<span class="mp2-lbw-tt" style="display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);width:220px;background:#1e293b;color:#e2e8f0;font-size:10px;line-height:1.5;padding:7px 10px;border-radius:7px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:999;pointer-events:none">The lookback window indicates the time before an Ad Break used to qualify the scene as a Moment</span>'
     +               '</span>'
     +             '</div>'
-    +             '<span id="mp2-lookback-label" style="font-size:11px;font-weight:600;color:var(--accent)">2 min</span>'
+    +             '<span id="mp2-lookback-label" style="font-size:11px;font-weight:600;color:var(--accent)">' + _mp2FmtWindowSecs(mp2LookbackSecs) + '</span>'
     +           '</div>'
-    +           '<input type="range" id="mp2-lookback-slider" min="30" max="300" value="120" step="15" oninput="mp2UpdateLookback(this.value)" style="accent-color:var(--accent)">'
+    +           '<input type="range" id="mp2-lookback-slider" min="30" max="300" value="' + mp2LookbackSecs + '" step="15" oninput="mp2UpdateLookback(this.value)" style="accent-color:var(--accent)">'
     +           '<div style="display:flex;justify-content:space-between;margin-top:1px">'
     +             '<span style="font-size:9px;color:var(--faint)">30 sec</span>'
     +             '<span style="font-size:9px;color:var(--faint)">5 min</span>'
@@ -2822,12 +2822,10 @@ function mp2SliderFill(val) {
 
 function mp2UpdateLookback(val) {
   mp2LookbackSecs = parseInt(val);
+  mp2AiParams.window.mode = 'set';
+  mp2AiParams.window.secs = mp2LookbackSecs;
   var label = document.getElementById('mp2-lookback-label');
-  if (!label) return;
-  var s = mp2LookbackSecs;
-  var m = Math.floor(s / 60);
-  var r = s % 60;
-  label.textContent = m > 0 && r > 0 ? m + ' min ' + r + ' sec' : m > 0 ? m + ' min' : s + ' sec';
+  if (label) label.textContent = _mp2FmtWindowSecs(mp2LookbackSecs);
   mp2SliderFill(mp2LookbackSecs);
 }
 
@@ -4124,8 +4122,15 @@ var mp2AiParams = {
   programs:    { mode: 'any', exact: '', min: '', max: '' },
   brand:       { mode: 'any', values: [] },
   score:       { mode: 'all', values: [] },
+  window:      { mode: 'any', secs: 120 },
   dates:       { start: '', end: '', viewMonth: new Date().getMonth(), viewYear: new Date().getFullYear() }
 };
+
+function _mp2FmtWindowSecs(s) {
+  var m = Math.floor(s / 60);
+  var r = s % 60;
+  return m > 0 && r > 0 ? m + ' min ' + r + ' sec' : m > 0 ? m + ' min' : s + ' sec';
+}
 
 // ── AI trigger helpers ─────────────────────────────────────────────────────
 
@@ -4171,6 +4176,9 @@ function aiTriggerText(param) {
   } else if (param === 'score') {
     if (p.mode === 'all' || !p.values || p.values.length === 0) return '…';
     return p.values.join(', ');
+  } else if (param === 'window') {
+    if (p.mode === 'any') return '…';
+    return _mp2FmtWindowSecs(p.secs);
   } else if (param === 'dates') {
     if (!p.start) return '…';
     var fmtD = function(s) { return new Date(s + 'T00:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric' }); };
@@ -4189,6 +4197,7 @@ var AI_PLACEHOLDERS = {
   programs:    'Select Shows',
   brand:       'Select Brand Safety',
   score:       'Select Score',
+  window:      'Select Window',
   dates:       'Select Dates'
 };
 
@@ -4473,6 +4482,21 @@ function aiDdContent(param) {
           return '<label style="' + SC_ROW + '">'
             + '<input type="checkbox" value="' + v + '"' + (chk ? ' checked' : '') + ' style="accent-color:#e11d8f;width:14px;height:14px;flex-shrink:0" onchange="aiScoreItem(\'' + v + '\',this.checked)">'
             + v
+            + '</label>';
+        }).join('')
+      + '</div>'
+      + aiDdOkBtn();
+  }
+
+  if (param === 'window') {
+    var wnOpts = [30, 60, 120, 180, 300];
+    var WN_ROW = 'display:flex;align-items:center;gap:9px;padding:5px 2px;cursor:pointer;font-size:13px;color:var(--text);user-select:none;border-radius:5px;';
+    return '<div style="display:flex;flex-direction:column">'
+      + wnOpts.map(function(s) {
+          var chk = p.mode === 'set' && p.secs === s;
+          return '<label style="' + WN_ROW + '">'
+            + '<input type="radio" name="ai-window-radio" value="' + s + '"' + (chk ? ' checked' : '') + ' style="accent-color:#e11d8f;width:14px;height:14px;flex-shrink:0" onchange="aiWindowSelect(' + s + ')">'
+            + _mp2FmtWindowSecs(s)
             + '</label>';
         }).join('')
       + '</div>'
@@ -4803,6 +4827,21 @@ function aiScoreItem(val, checked) {
   aiUpdateTrigger('score');
   var dd = document.getElementById('ai-global-dd');
   if (dd) dd.innerHTML = aiDdContent('score');
+}
+
+function aiWindowSelect(secs) {
+  mp2AiParams.window.mode = 'set';
+  mp2AiParams.window.secs = secs;
+  mp2LookbackSecs = secs;
+  aiUpdateTrigger('window');
+  var dd = document.getElementById('ai-global-dd');
+  if (dd) dd.innerHTML = aiDdContent('window');
+  // Keep Step 3's Lookback Window slider in sync if already rendered
+  var slider = document.getElementById('mp2-lookback-slider');
+  var label  = document.getElementById('mp2-lookback-label');
+  if (slider) slider.value = secs;
+  if (label)  label.textContent = _mp2FmtWindowSecs(secs);
+  mp2SliderFill(secs);
 }
 
 function aiDdDo(param, val) {
