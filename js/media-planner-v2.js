@@ -1593,7 +1593,7 @@ function mp2BuildNewPlanAIPanel() {
     + '<div style="font-size:15px;line-height:2;color:var(--text);margin-bottom:32px;text-align:left">'
     +   'The budget for my media plan is ' + aiTriggerHtml('budget')
     +   ' and I want to deliver ' + aiTriggerHtml('impressions') + ' impressions per day. '
-    +   'I want to target ' + aiTriggerHtml('type') + ' of Inventory, and the following channels '
+    +   'I want to target ' + aiTriggerHtml('type') + ' Inventory, and the following channels: '
     +   aiTriggerHtml('channels') + '. '
     +   'My Brand Safety parameters are ' + aiTriggerHtml('brand') + '. '
     +   'Use ' + aiTriggerHtml('score') + ' Match Score and a ' + aiTriggerHtml('window') + ' Lookback.'
