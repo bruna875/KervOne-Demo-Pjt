@@ -100,8 +100,8 @@
 
   /* compact domain cards — same family as bc-info-card, one hierarchy level down */
   .row-domsub .row-cell{
-    display:flex;flex-wrap:nowrap;align-content:stretch;justify-content:flex-start;
-    align-items:stretch;gap:6px;padding:10px;
+    display:flex;flex-wrap:nowrap;align-content:flex-start;justify-content:flex-start;
+    align-items:flex-start;gap:6px;padding:10px;position:relative;
   }
   .domain-card{
     background:var(--surface);
@@ -110,12 +110,26 @@
     padding:6px 7px;
     flex:1 1 0;
     min-width:0;
+    position:relative;
   }
   .domain-label{
     font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
     color:var(--faint);display:block;
   }
   .domain-title{font-size:9.5px;font-weight:600;color:var(--text);line-height:1.25;margin-top:1px}
+
+  /* domain-owner icon + vertical spine reaching down into the Squads swimlane */
+  .domain-icon{display:flex;justify-content:center;margin-top:5px}
+  .domain-icon svg, .spine-icon svg{width:12px;height:12px;color:var(--muted)}
+  .squad-spine{
+    position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+    padding-top:14px;
+  }
+  .squad-spine::before{
+    content:'';position:absolute;top:0;left:50%;width:1px;height:14px;
+    background:var(--border-md);transform:translateX(-50%);
+  }
 
   .row-domsub .row-cell, .row-domsub .glabel{border-top:1px solid var(--border-md)}
   .row-squad  .row-cell, .row-squad  .glabel{border-top:1px solid var(--border-md)}
@@ -155,11 +169,19 @@
     + '</svg>';
   var ICON_KERV = '<img src="/kerv-one-favicon.png" alt=""/>';
 
+  var ICON_USER =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    + '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'
+    + '</svg>';
+
   var COLUMNS = [
-    { key:'shared',    name:'Shared Services',      sub:'Compliance, Security, IT and DevOps', icon:ICON_SHIELD, domains:['Security, Compliance e DevOps', 'IT Support'] },
-    { key:'api',       name:'API Suite',             sub:'Content, Live, Commerce, etc',        icon:ICON_SERVER, domains:['Lorem Ipsum'] },
-    { key:'platform',  name:'KERV Platform',         sub:'',                                    icon:ICON_KERV,   domains:['Lorem Ipsum', 'Lorem Ipsum', 'Lorem Ipsum'] },
-    { key:'reporting', name:'Reporting & Analytics', sub:'',                                    icon:ICON_CHART,  domains:['Lorem Ipsum'] }
+    { key:'shared',    name:'Shared Services',      sub:'Compliance, Security, IT and DevOps', icon:ICON_SHIELD, domains:[
+        { title:'Security, Compliance e DevOps', spine:2 },
+        { title:'IT Support' }
+      ] },
+    { key:'api',       name:'API Suite',             sub:'Content, Live, Commerce, etc',        icon:ICON_SERVER, domains:[{ title:'Lorem Ipsum' }] },
+    { key:'platform',  name:'KERV Platform',         sub:'',                                    icon:ICON_KERV,   domains:[{ title:'Lorem Ipsum' }, { title:'Lorem Ipsum' }, { title:'Lorem Ipsum' }] },
+    { key:'reporting', name:'Reporting & Analytics', sub:'',                                    icon:ICON_CHART,  domains:[{ title:'Lorem Ipsum' }] }
   ];
 
   var LOREM = 'Lorem ipsum dolor sit amet';
@@ -181,9 +203,17 @@
 
     var domainCells = COLUMNS.map(function(c) {
       var cards = c.domains.map(function(d) {
+        var spineHtml = '';
+        if (d.spine) {
+          var extraIcons = '';
+          for (var i = 1; i < d.spine; i++) extraIcons += '<div class="spine-icon">' + ICON_USER + '</div>';
+          spineHtml = '<div class="squad-spine">' + extraIcons + '</div>';
+        }
         return '<div class="domain-card">'
           + '<span class="domain-label">Domain</span>'
-          + '<div class="domain-title">' + d + '</div>'
+          + '<div class="domain-title">' + d.title + '</div>'
+          + (d.spine ? '<div class="domain-icon">' + ICON_USER + '</div>' : '')
+          + spineHtml
           + '</div>';
       }).join('');
       return '<div class="row-cell col-' + c.key + '">' + cards + '</div>';
