@@ -120,6 +120,7 @@
     display:flex;
     flex-direction:column;
   }
+  .domain-card--off{opacity:.4}
   .domain-label{
     font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
     color:var(--faint);display:block;
@@ -195,7 +196,7 @@
       ] },
     { key:'api',       name:'API Suite',             sub:'Content, Live, Commerce, etc',        icon:ICON_SERVER, domains:[{ title:'Content and Live', spine:1 }, { title:'Commerce', spine:1 }] },
     { key:'platform',  name:'KERV Platform',         sub:'',                                    icon:ICON_KERV,   domains:[
-        { title:'Product Design e Design System', spine:1 },
+        { title:'Product Design', spine:1 },
         { title:'Core and Publisher', spine:1 },
         { title:'Ad Operations', rowIcons:2 }
       ] },
@@ -231,7 +232,9 @@
       var cards = domains.map(function(d) {
         var spineHtml = '';
         var iconsHtml = '';
-        if (d.rowIcons) {
+        if (d.off) {
+          // disabled placeholder — shown for parity with the other panel, no headcount
+        } else if (d.rowIcons) {
           var rowIcons = '';
           for (var j = 0; j < d.rowIcons; j++) rowIcons += '<div class="row-icon">' + ICON_USER + '</div>';
           iconsHtml = '<div class="domain-divider"></div><div class="domain-icon-row">' + rowIcons + '</div>';
@@ -243,7 +246,7 @@
             spineHtml = '<div class="squad-spine">' + extraIcons + '</div>';
           }
         }
-        return '<div class="domain-card">'
+        return '<div class="domain-card' + (d.off ? ' domain-card--off' : '') + '">'
           + '<span class="domain-label">Domain</span>'
           + '<div class="domain-title">' + d.title + '</div>'
           + iconsHtml
@@ -274,12 +277,14 @@
   }
 
   document.getElementById('chartsWrap').innerHTML =
-    panelHtml('Product', 'section-header--product', ['shared'])
+    panelHtml('Product', 'section-header--product', ['shared'], {
+        reporting: [{ title:'R&D', off:true }, { title:'Data' }]
+      })
     + '<div class="divider"></div>'
     + panelHtml('Technology', 'section-header--technology', [], {
         api: [{ title:'Content and Live', spine:3 }, { title:'Commerce', spine:1 }],
         reporting: [{ title:'R&D', spine:2 }, { title:'Data', spine:3 }],
-        platform: [{ title:'Core e VOD', spine:6 }, { title:'Ads Platform', spine:6 }]
+        platform: [{ title:'Product Design', off:true }, { title:'Core e VOD', spine:6 }, { title:'Ads Platform', spine:6 }]
       });
 </script>
 
