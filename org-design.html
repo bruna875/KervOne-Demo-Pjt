@@ -194,7 +194,8 @@
 
   var LOREM = 'Lorem ipsum dolor sit amet';
 
-  function panelHtml(title, headerClass, showDomains) {
+  function panelHtml(title, headerClass, hiddenKeys) {
+    hiddenKeys = hiddenKeys || [];
     var infoCells = COLUMNS.map(function(c) {
       return '<div class="bc-info-cell col-' + c.key + '">'
         + '<div class="bc-info-card">'
@@ -212,6 +213,9 @@
     }).join('');
 
     var domainCells = COLUMNS.map(function(c) {
+      if (hiddenKeys.indexOf(c.key) !== -1) {
+        return '<div class="row-cell col-' + c.key + '"></div>';
+      }
       var cards = c.domains.map(function(d) {
         var spineHtml = '';
         if (d.spine > 1) {
@@ -240,7 +244,7 @@
       +   '<div class="section-header ' + headerClass + '">' + title + '</div>'
       +   '<div class="grid">' + '<div></div>' + infoCells + '</div>'
       +   '<div class="grid row-domsub">'
-      +     '<div class="glabel">Domain / Subdomain</div>' + (showDomains ? domainCells : emptyRow())
+      +     '<div class="glabel">Domain / Subdomain</div>' + domainCells
       +   '</div>'
       +   '<div class="grid row-squad">'
       +     '<div class="glabel">Squads</div>' + emptyRow()
@@ -250,9 +254,9 @@
   }
 
   document.getElementById('chartsWrap').innerHTML =
-    panelHtml('Product', 'section-header--product', false)
+    panelHtml('Product', 'section-header--product', ['shared'])
     + '<div class="divider"></div>'
-    + panelHtml('Technology', 'section-header--technology', true);
+    + panelHtml('Technology', 'section-header--technology');
 </script>
 
 </body>
