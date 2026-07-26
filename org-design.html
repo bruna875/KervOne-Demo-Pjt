@@ -19,17 +19,10 @@
     --col-reporting: #F0FBF4;
   }
 
-  .top-bar{display:flex;align-items:center;justify-content:space-between;gap:24px;border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:28px}
-  .top-bar-brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .top-bar{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:28px}
   .top-bar img{width:26px;height:26px;flex-shrink:0}
   .top-bar-title{font-size:20px;font-weight:600;color:var(--text);letter-spacing:-.3px}
   .top-bar-sub{font-size:12px;color:var(--muted)}
-
-  .legend{display:flex;flex-wrap:nowrap;justify-content:flex-end;gap:20px}
-  .legend-item{display:flex;align-items:flex-start;gap:6px;width:170px;flex-shrink:0}
-  .legend-swatch{width:10px;height:10px;border-radius:3px;flex-shrink:0;margin-top:2px;border:1px solid var(--border-md)}
-  .legend-title{font-size:10.5px;font-weight:600;color:var(--text);line-height:1.3}
-  .legend-desc{font-size:9.5px;color:var(--muted);line-height:1.3;margin-top:1px}
 
   .page-inner{width:max-content}
   .charts-wrap{display:flex;align-items:flex-start;gap:0}
@@ -54,6 +47,18 @@
   }
   .section-header--product{background:var(--accent)}
   .section-header--technology{background:var(--secondary)}
+
+  .rd-section{
+    margin-top:24px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  .rd-header{color:#fff;font-size:16px;font-weight:700;padding:14px 20px;background:#475569}
+  .rd-icons{display:flex;justify-content:center;gap:16px;padding:20px}
+  .rd-icons .row-icon svg{width:16px;height:16px;color:var(--muted)}
 
   .grid{display:grid;grid-template-columns:110px 1fr 1fr 1.5fr 0.7fr}
   .grid > div:nth-child(3), .grid > div:nth-child(4), .grid > div:nth-child(5){
@@ -163,35 +168,19 @@
 
 <div class="page-inner">
 <div class="top-bar">
-  <div class="top-bar-brand">
-    <img src="/kerv-one-favicon.png" alt="KERV"/>
-    <div>
-      <div class="top-bar-title">Org Design</div>
-      <div class="top-bar-sub">Product &amp; Technology — bounded contexts</div>
-    </div>
-  </div>
-
-  <div class="legend">
-    <div class="legend-item">
-      <span class="legend-swatch" style="background:var(--col-shared)"></span>
-      <div><div class="legend-title">Stream-aligned team</div><div class="legend-desc">Primary team aligned to one value stream, close to the end user.</div></div>
-    </div>
-    <div class="legend-item">
-      <span class="legend-swatch" style="background:var(--col-api)"></span>
-      <div><div class="legend-title">Platform team</div><div class="legend-desc">Provides internal tools &amp; infra as a service, reducing other teams' cognitive load.</div></div>
-    </div>
-    <div class="legend-item">
-      <span class="legend-swatch" style="background:var(--col-platform)"></span>
-      <div><div class="legend-title">Enabling team</div><div class="legend-desc">Specialists who temporarily help other teams adopt new skills.</div></div>
-    </div>
-    <div class="legend-item">
-      <span class="legend-swatch" style="background:var(--col-reporting)"></span>
-      <div><div class="legend-title">Complicated-subsystem team</div><div class="legend-desc">Focuses on a highly complex subsystem, needs deep specialist skills.</div></div>
-    </div>
+  <img src="/kerv-one-favicon.png" alt="KERV"/>
+  <div>
+    <div class="top-bar-title">Org Design</div>
+    <div class="top-bar-sub">Product &amp; Technology — bounded contexts</div>
   </div>
 </div>
 
 <div class="charts-wrap" id="chartsWrap"></div>
+
+<div class="rd-section">
+  <div class="rd-header">R&amp;D and Product Innovation</div>
+  <div class="rd-icons" id="rdIcons"></div>
+</div>
 </div>
 
 <script>
@@ -306,6 +295,9 @@
     + panelHtml('Technology', 'section-header--technology', [], {
         api: [{ title:'Content and Live', spine:3 }, { title:'Commerce', spine:1 }]
       });
+
+  document.getElementById('rdIcons').innerHTML =
+    '<div class="row-icon">' + ICON_USER + '</div><div class="row-icon">' + ICON_USER + '</div>';
 </script>
 
 </body>
