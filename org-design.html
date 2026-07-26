@@ -128,7 +128,8 @@
   /* domain-owner icon + vertical spine reaching down into the Squads swimlane */
   .domain-divider{height:1px;background:var(--border);margin:auto 0 6px}
   .domain-icon{display:flex;justify-content:center}
-  .domain-icon svg, .spine-icon svg{width:16px;height:16px;color:var(--muted)}
+  .domain-icon svg, .spine-icon svg, .row-icon svg{width:16px;height:16px;color:var(--muted)}
+  .domain-icon-row{display:flex;justify-content:center;gap:8px}
   .squad-spine{
     position:absolute;top:100%;left:50%;transform:translateX(-50%);
     display:flex;flex-direction:column;align-items:center;gap:10px;
@@ -188,7 +189,11 @@
         { title:'IT Support', spine:2 }
       ] },
     { key:'api',       name:'API Suite',             sub:'Content, Live, Commerce, etc',        icon:ICON_SERVER, domains:[{ title:'Content and Live', spine:1 }, { title:'Commerce', spine:1 }] },
-    { key:'platform',  name:'KERV Platform',         sub:'',                                    icon:ICON_KERV,   domains:[{ title:'Lorem Ipsum' }, { title:'Lorem Ipsum' }, { title:'Lorem Ipsum' }] },
+    { key:'platform',  name:'KERV Platform',         sub:'',                                    icon:ICON_KERV,   domains:[
+        { title:'Product Design e Design System', spine:1 },
+        { title:'Core and Publisher', spine:1 },
+        { title:'Ad Operations', rowIcons:2 }
+      ] },
     { key:'reporting', name:'Reporting & Analytics', sub:'',                                    icon:ICON_CHART,  domains:[{ title:'Lorem Ipsum' }] }
   ];
 
@@ -220,15 +225,23 @@
       var domains = domainOverrides[c.key] || c.domains;
       var cards = domains.map(function(d) {
         var spineHtml = '';
-        if (d.spine > 1) {
-          var extraIcons = '';
-          for (var i = 1; i < d.spine; i++) extraIcons += '<div class="spine-icon">' + ICON_USER + '</div>';
-          spineHtml = '<div class="squad-spine">' + extraIcons + '</div>';
+        var iconsHtml = '';
+        if (d.rowIcons) {
+          var rowIcons = '';
+          for (var j = 0; j < d.rowIcons; j++) rowIcons += '<div class="row-icon">' + ICON_USER + '</div>';
+          iconsHtml = '<div class="domain-divider"></div><div class="domain-icon-row">' + rowIcons + '</div>';
+        } else if (d.spine) {
+          iconsHtml = '<div class="domain-divider"></div><div class="domain-icon">' + ICON_USER + '</div>';
+          if (d.spine > 1) {
+            var extraIcons = '';
+            for (var i = 1; i < d.spine; i++) extraIcons += '<div class="spine-icon">' + ICON_USER + '</div>';
+            spineHtml = '<div class="squad-spine">' + extraIcons + '</div>';
+          }
         }
         return '<div class="domain-card">'
           + '<span class="domain-label">Domain</span>'
           + '<div class="domain-title">' + d.title + '</div>'
-          + (d.spine ? '<div class="domain-divider"></div><div class="domain-icon">' + ICON_USER + '</div>' : '')
+          + iconsHtml
           + spineHtml
           + '</div>';
       }).join('');
