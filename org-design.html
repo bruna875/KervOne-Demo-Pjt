@@ -48,18 +48,6 @@
   .section-header--product{background:var(--accent)}
   .section-header--technology{background:var(--secondary)}
 
-  .rd-section{
-    margin-top:24px;
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:14px;
-    overflow:hidden;
-    box-shadow:0 1px 3px rgba(0,0,0,.04);
-  }
-  .rd-header{color:#fff;font-size:16px;font-weight:700;padding:14px 20px;background:#475569}
-  .rd-icons{display:flex;justify-content:center;gap:16px;padding:20px}
-  .rd-icons .row-icon svg{width:16px;height:16px;color:var(--muted)}
-
   .grid{display:grid;grid-template-columns:110px 1fr 1fr 1.5fr 0.7fr}
   .grid > div:nth-child(3), .grid > div:nth-child(4), .grid > div:nth-child(5){
     border-left:1px dashed rgba(15,23,42,.12);
@@ -177,10 +165,6 @@
 
 <div class="charts-wrap" id="chartsWrap"></div>
 
-<div class="rd-section">
-  <div class="rd-header">R&amp;D and Product Innovation</div>
-  <div class="rd-icons" id="rdIcons"></div>
-</div>
 </div>
 
 <script>
@@ -215,7 +199,7 @@
         { title:'Core and Publisher', spine:1 },
         { title:'Ad Operations', rowIcons:2 }
       ] },
-    { key:'reporting', name:'Data & Analytics',      sub:'',                                    icon:ICON_CHART,  domains:[{ title:'Data & Analytics' }] }
+    { key:'reporting', name:'Research & Data',       sub:'',                                    icon:ICON_CHART,  domains:[{ title:'Research & Data' }] }
   ];
 
   var LOREM = 'Lorem ipsum dolor sit amet';
@@ -295,9 +279,6 @@
     + panelHtml('Technology', 'section-header--technology', [], {
         api: [{ title:'Content and Live', spine:3 }, { title:'Commerce', spine:1 }]
       });
-
-  document.getElementById('rdIcons').innerHTML =
-    '<div class="row-icon">' + ICON_USER + '</div><div class="row-icon">' + ICON_USER + '</div>';
 </script>
 
 </body>
