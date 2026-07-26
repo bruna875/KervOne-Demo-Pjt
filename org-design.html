@@ -47,16 +47,6 @@
   .section-header--product{background:var(--accent)}
   .section-header--technology{background:var(--secondary)}
 
-  .bc-label{
-    font-size:10px;
-    font-weight:600;
-    text-transform:uppercase;
-    letter-spacing:.6px;
-    color:var(--faint);
-    padding:14px 0 0;
-    margin-left:110px;
-  }
-
   .grid{display:grid;grid-template-columns:110px repeat(4,1fr)}
   .grid > div:nth-child(3), .grid > div:nth-child(4), .grid > div:nth-child(5){
     border-left:1px dashed rgba(15,23,42,.12);
@@ -75,8 +65,24 @@
     background:var(--surface);
   }
 
-  /* bounded-context card row */
-  .bc-cell{padding:10px 8px}
+  /* per-column info box: "Bounded Context" label + title + description */
+  .bc-info-cell{padding:10px 8px 4px}
+  .bc-info-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 12px;
+    height:100%;
+  }
+  .bc-info-label{
+    font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--faint);margin-bottom:4px;
+  }
+  .bc-info-title{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.3}
+  .bc-info-sub{font-size:10.5px;font-weight:400;color:var(--muted);margin-top:2px;line-height:1.35;display:block}
+
+  /* bounded-context icon card row */
+  .bc-cell{padding:6px 8px 10px}
   .bc-card{
     background:var(--surface);
     border:1px solid var(--border);
@@ -84,13 +90,13 @@
     padding:10px 12px;
     display:flex;
     flex-direction:column;
+    align-items:center;
     gap:8px;
     height:100%;
   }
   .bc-user{display:flex;justify-content:center}
   .bc-user svg{width:18px;height:18px}
-  .bc-divider{height:1px;background:var(--border)}
-  .bc-body{display:flex;align-items:flex-start;gap:9px}
+  .bc-divider{height:1px;align-self:stretch;background:var(--border)}
   .bc-icon{
     width:30px;height:30px;border-radius:8px;flex-shrink:0;
     display:flex;align-items:center;justify-content:center;
@@ -98,8 +104,6 @@
   }
   .bc-icon img{width:18px;height:18px;object-fit:contain}
   .bc-icon svg{width:16px;height:16px}
-  .bc-title{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.3}
-  .bc-sub{font-size:10.5px;font-weight:400;color:var(--muted);margin-top:2px;line-height:1.35;display:block}
 
   /* icon rows */
   .row-cell{
@@ -159,18 +163,25 @@
     { key:'reporting', name:'Reporting & Analytics', sub:'',                                    icon:ICON_CHART,  domsub:1, squad:0 }
   ];
 
+  var LOREM = 'Lorem ipsum dolor sit amet';
+
   function panelHtml(title, headerClass, userColor) {
+    var infoCells = COLUMNS.map(function(c) {
+      return '<div class="bc-info-cell col-' + c.key + '">'
+        + '<div class="bc-info-card">'
+        +   '<div class="bc-info-label">Bounded Context</div>'
+        +   '<div class="bc-info-title">' + c.name + '</div>'
+        +   '<span class="bc-info-sub">' + (c.sub || LOREM) + '</span>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+
     var bcCells = COLUMNS.map(function(c) {
       return '<div class="bc-cell col-' + c.key + '">'
         + '<div class="bc-card">'
         +   '<div class="bc-user" style="color:' + userColor + '">' + ICON_USER + '</div>'
         +   '<div class="bc-divider"></div>'
-        +   '<div class="bc-body">'
-        +     '<div class="bc-icon">' + c.icon + '</div>'
-        +     '<div><div class="bc-title">' + c.name + '</div>'
-        +     (c.sub ? '<span class="bc-sub">' + c.sub + '</span>' : '')
-        +     '</div>'
-        +   '</div>'
+        +   '<div class="bc-icon">' + c.icon + '</div>'
         + '</div>'
         + '</div>';
     }).join('');
@@ -184,7 +195,7 @@
     return '<div class="panel">'
       + '<div class="section-card">'
       +   '<div class="section-header ' + headerClass + '">' + title + '</div>'
-      +   '<div class="bc-label">Bounded Contexts</div>'
+      +   '<div class="grid">' + '<div></div>' + infoCells + '</div>'
       +   '<div class="grid">' + '<div></div>' + bcCells + '</div>'
       +   '<div class="grid row-domsub">'
       +     '<div class="glabel">Domain / Subdomain</div>' + emptyRow()
