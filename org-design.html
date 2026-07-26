@@ -5,125 +5,145 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Org Design</title>
 <link rel="icon" type="image/png" href="/kerv-one-favicon.png"/>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/css/style.css"/>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:auto;overflow:auto}
-  body{font-family:'Geist',system-ui,sans-serif;background:#fff;color:#111827;padding:24px 32px 60px}
+  /* This page is a standalone diagram, not part of the app shell — override the app's fixed-height/hidden-overflow body */
+  html,body{height:auto !important;overflow:auto !important}
+  body{padding:28px 32px 80px}
 
-  .top-bar{border-bottom:1px solid #e5e7eb;padding-bottom:16px;margin-bottom:24px}
-
-  .charts-wrap{
-    display:flex;
-    align-items:flex-start;
-    gap:0;
-    width:max-content;
-    min-width:100%;
+  :root{
+    --col-shared:    #F1F5F9;
+    --col-api:       #EEF4FF;
+    --col-platform:  #FDF0F4;
+    --col-reporting: #F0FBF4;
   }
 
-  .divider{
-    width:1px;
-    align-self:stretch;
-    background:#d1d5db;
-    margin:0 32px;
-    flex-shrink:0;
+  .top-bar{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:28px}
+  .top-bar img{width:26px;height:26px;flex-shrink:0}
+  .top-bar-title{font-size:20px;font-weight:600;color:var(--text);letter-spacing:-.3px}
+  .top-bar-sub{font-size:12px;color:var(--muted)}
+
+  .charts-wrap{display:flex;align-items:flex-start;gap:0;width:max-content;min-width:100%}
+
+  .divider{width:1px;align-self:stretch;background:var(--border-md);margin:0 28px;flex-shrink:0}
+
+  .panel{width:1040px;flex-shrink:0}
+
+  .section-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);
   }
 
-  .panel{width:1000px;flex-shrink:0}
-
-  .panel-title{
-    background:#5B7FD3;
+  .section-header{
     color:#fff;
-    font-size:22px;
+    font-size:16px;
     font-weight:700;
-    text-align:center;
-    padding:14px 0;
-    margin-bottom:14px;
-    width:75%;
+    padding:14px 20px;
   }
+  .section-header--product{background:var(--accent)}
+  .section-header--technology{background:var(--secondary)}
 
   .bc-label{
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:.4px;
-    text-align:center;
-    margin-bottom:8px;
-    padding-left:120px; /* offset to align over the column area, not the row-label gutter */
+    font-size:10px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:var(--faint);
+    padding:14px 16px 0;
   }
 
-  .matrix{display:flex}
+  .grid{display:grid;grid-template-columns:110px repeat(4,1fr)}
 
-  .row-labels{
-    width:120px;
-    flex-shrink:0;
-    display:flex;
-    flex-direction:column;
-  }
-  .row-labels .cell{
+  /* row label gutter */
+  .glabel{
     display:flex;
     align-items:flex-start;
-    padding-top:10px;
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:.4px;
-    color:#374151;
+    padding:12px 12px 0;
+    font-size:10px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:var(--muted);
+    background:var(--surface);
   }
 
-  .columns{display:flex;flex:1}
-
-  .column{
-    flex:1;
-    border-left:1.5px dashed #9ca3af;
+  /* bounded-context card row */
+  .bc-cell{padding:10px 8px}
+  .bc-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 12px;
     display:flex;
-    flex-direction:column;
+    align-items:flex-start;
+    gap:9px;
+    height:100%;
   }
-  .column:last-child{border-right:1.5px dashed #9ca3af}
-
-  .column-header{
-    padding:0 14px 14px;
-    font-size:13px;
-    font-weight:700;
-    line-height:1.4;
+  .bc-icon{
+    width:30px;height:30px;border-radius:8px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--subtle);color:var(--accent);
   }
-  .column-header .sub{
-    font-weight:400;
-    color:#6b7280;
-    display:block;
+  .bc-icon img{width:18px;height:18px;object-fit:contain}
+  .bc-icon svg{width:16px;height:16px}
+  .bc-title{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.3}
+  .bc-sub{font-size:10.5px;font-weight:400;color:var(--muted);margin-top:2px;line-height:1.35;display:block}
+
+  /* icon rows */
+  .row-cell{
+    display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;
+    gap:12px;padding:14px 10px;
   }
+  .row-domain    .row-cell, .row-domain    .glabel{height:150px}
+  .row-subdomain .row-cell, .row-subdomain .glabel{height:150px}
+  .row-squad     .row-cell, .row-squad     .glabel{height:220px}
 
-  .cell{
-    display:flex;
-    flex-wrap:wrap;
-    align-content:flex-start;
-    justify-content:center;
-    gap:14px;
-    padding:14px 10px;
-  }
+  .row-subdomain .row-cell, .row-subdomain .glabel{border-top:1px solid var(--border-md)}
+  .row-squad     .row-cell, .row-squad     .glabel{border-top:1px solid var(--border-md)}
 
-  .row-top .cell, .row-labels .cell.top{height:220px}
-  .row-sub .cell,  .row-labels .cell.sub{height:180px;border-top:1px solid #6b7280}
-  .row-squad .cell,.row-labels .cell.squad{height:300px;border-top:1px solid #6b7280}
+  .col-shared    { background:var(--col-shared); }
+  .col-api       { background:var(--col-api); }
+  .col-platform  { background:var(--col-platform); }
+  .col-reporting { background:var(--col-reporting); }
 
-  .person{width:34px;height:34px;flex-shrink:0}
-
-  @media (max-width: 1300px){
-    body{overflow-x:auto}
-  }
+  .person{width:26px;height:26px;flex-shrink:0;color:var(--muted)}
 </style>
 </head>
 <body>
 
 <div class="top-bar">
-  <div style="font-size:13px;color:#6b7280">KERV Platform</div>
-  <div style="font-size:20px;font-weight:600">Org Design</div>
+  <img src="/kerv-one-favicon.png" alt="KERV"/>
+  <div>
+    <div class="top-bar-title">Org Design</div>
+    <div class="top-bar-sub">Product &amp; Technology — bounded contexts</div>
+  </div>
 </div>
 
 <div class="charts-wrap" id="chartsWrap"></div>
 
 <script>
-  var PERSON_SVG = '<svg class="person" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">'
-    + '<circle cx="20" cy="13" r="8" fill="#111827"/>'
-    + '<path d="M4 38c0-9.94 7.16-18 16-18s16 8.06 16 18" fill="#111827"/>'
+  var ICON_SHIELD =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    + '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>'
+    + '</svg>';
+  var ICON_SERVER =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    + '<rect width="20" height="8" x="2" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/>'
+    + '<line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/>'
+    + '</svg>';
+  var ICON_CHART =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    + '<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>'
+    + '</svg>';
+  var ICON_KERV = '<img src="/kerv-one-favicon.png" alt=""/>';
+
+  var PERSON_SVG =
+    '<svg class="person" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    + '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'
     + '</svg>';
 
   function personIcons(n) {
@@ -133,40 +153,52 @@
   }
 
   var COLUMNS = [
-    { name: 'Shared Services', sub: '(Compliance, Security, IT and DevOps)', top: 1, sub_: 0, squad: 0 },
-    { name: 'API Suite',       sub: '(Content, Live, Commerce, etc)',        top: 1, sub_: 2, squad: 0 },
-    { name: 'KERV Platform',   sub: '',                                     top: 1, sub_: 4, squad: 0 },
-    { name: 'Reporting & Analytics', sub: '',                               top: 1, sub_: 0, squad: 0 }
+    { key:'shared',    name:'Shared Services',      sub:'Compliance, Security, IT and DevOps', icon:ICON_SHIELD, domain:1, sub_:0, squad:0 },
+    { key:'api',       name:'API Suite',             sub:'Content, Live, Commerce, etc',        icon:ICON_SERVER, domain:1, sub_:2, squad:0 },
+    { key:'platform',  name:'KERV Platform',         sub:'',                                    icon:ICON_KERV,   domain:1, sub_:4, squad:0 },
+    { key:'reporting', name:'Reporting & Analytics', sub:'',                                    icon:ICON_CHART,  domain:1, sub_:0, squad:0 }
   ];
 
-  function panelHtml(title) {
-    var cols = COLUMNS.map(function(c) {
-      return '<div class="column">'
-        + '<div class="column-header">' + c.name + (c.sub ? '<span class="sub">' + c.sub + '</span>' : '') + '</div>'
-        + '<div class="row-top"><div class="cell">' + personIcons(c.top) + '</div></div>'
-        + '<div class="row-sub"><div class="cell">' + personIcons(c.sub_) + '</div></div>'
-        + '<div class="row-squad"><div class="cell">' + personIcons(c.squad) + '</div></div>'
+  function panelHtml(title, headerClass) {
+    var bcCells = COLUMNS.map(function(c) {
+      return '<div class="bc-cell col-' + c.key + '">'
+        + '<div class="bc-card">'
+        +   '<div class="bc-icon">' + c.icon + '</div>'
+        +   '<div><div class="bc-title">' + c.name + '</div>'
+        +   (c.sub ? '<span class="bc-sub">' + c.sub + '</span>' : '')
+        +   '</div>'
+        + '</div>'
         + '</div>';
     }).join('');
 
+    function iconRow(field) {
+      return COLUMNS.map(function(c) {
+        return '<div class="row-cell col-' + c.key + '">' + personIcons(c[field]) + '</div>';
+      }).join('');
+    }
+
     return '<div class="panel">'
-      + '<div class="panel-title">' + title + '</div>'
-      + '<div class="bc-label">BOUNDED CONTEXTS</div>'
-      + '<div class="matrix">'
-      +   '<div class="row-labels">'
-      +     '<div class="cell top"></div>'
-      +     '<div class="cell sub">SUBDOMAIN</div>'
-      +     '<div class="cell squad">SQUADS</div>'
+      + '<div class="section-card">'
+      +   '<div class="section-header ' + headerClass + '">' + title + '</div>'
+      +   '<div class="bc-label">Bounded Contexts</div>'
+      +   '<div class="grid" style="padding:10px 12px 0">' + '<div></div>' + bcCells + '</div>'
+      +   '<div class="grid row-domain">'
+      +     '<div class="glabel">Domain</div>' + iconRow('domain')
       +   '</div>'
-      +   '<div class="columns">' + cols + '</div>'
+      +   '<div class="grid row-subdomain">'
+      +     '<div class="glabel">Subdomain</div>' + iconRow('sub_')
+      +   '</div>'
+      +   '<div class="grid row-squad">'
+      +     '<div class="glabel">Squads</div>' + iconRow('squad')
+      +   '</div>'
       + '</div>'
       + '</div>';
   }
 
   document.getElementById('chartsWrap').innerHTML =
-    panelHtml('Product')
+    panelHtml('Product', 'section-header--product')
     + '<div class="divider"></div>'
-    + panelHtml('Technology');
+    + panelHtml('Technology', 'section-header--technology');
 </script>
 
 </body>
