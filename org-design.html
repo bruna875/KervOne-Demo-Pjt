@@ -53,10 +53,14 @@
     text-transform:uppercase;
     letter-spacing:.6px;
     color:var(--faint);
-    padding:14px 16px 0;
+    padding:14px 0 0;
+    margin-left:110px;
   }
 
   .grid{display:grid;grid-template-columns:110px repeat(4,1fr)}
+  .grid > div:nth-child(3), .grid > div:nth-child(4), .grid > div:nth-child(5){
+    border-left:1px dashed rgba(15,23,42,.12);
+  }
 
   /* row label gutter */
   .glabel{
@@ -98,19 +102,18 @@
     display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;
     gap:12px;padding:14px 10px;
   }
-  .row-domain    .row-cell, .row-domain    .glabel{height:150px}
-  .row-subdomain .row-cell, .row-subdomain .glabel{height:150px}
-  .row-squad     .row-cell, .row-squad     .glabel{height:220px}
+  .row-domsub .row-cell, .row-domsub .glabel{height:170px}
+  .row-squad  .row-cell, .row-squad  .glabel{height:220px}
 
-  .row-subdomain .row-cell, .row-subdomain .glabel{border-top:1px solid var(--border-md)}
-  .row-squad     .row-cell, .row-squad     .glabel{border-top:1px solid var(--border-md)}
+  .row-domsub .row-cell, .row-domsub .glabel{border-top:1px solid var(--border-md)}
+  .row-squad  .row-cell, .row-squad  .glabel{border-top:1px solid var(--border-md)}
 
   .col-shared    { background:var(--col-shared); }
   .col-api       { background:var(--col-api); }
   .col-platform  { background:var(--col-platform); }
   .col-reporting { background:var(--col-reporting); }
 
-  .person{width:26px;height:26px;flex-shrink:0;color:var(--muted)}
+  .avatar{width:34px;height:34px;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -141,22 +144,24 @@
     + '</svg>';
   var ICON_KERV = '<img src="/kerv-one-favicon.png" alt=""/>';
 
-  var PERSON_SVG =
-    '<svg class="person" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-    + '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'
+  var AVATAR_SVG =
+    '<svg class="avatar" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">'
+    + '<circle cx="20" cy="20" r="20" fill="var(--subtle)"/>'
+    + '<path d="M4 37c0-9.94 7.16-18 16-18s16 8.06 16 18" fill="var(--accent)"/>'
+    + '<circle cx="20" cy="16" r="7.5" fill="var(--accent)"/>'
     + '</svg>';
 
   function personIcons(n) {
     var out = '';
-    for (var i = 0; i < n; i++) out += PERSON_SVG;
+    for (var i = 0; i < n; i++) out += AVATAR_SVG;
     return out;
   }
 
   var COLUMNS = [
-    { key:'shared',    name:'Shared Services',      sub:'Compliance, Security, IT and DevOps', icon:ICON_SHIELD, domain:1, sub_:0, squad:0 },
-    { key:'api',       name:'API Suite',             sub:'Content, Live, Commerce, etc',        icon:ICON_SERVER, domain:1, sub_:2, squad:0 },
-    { key:'platform',  name:'KERV Platform',         sub:'',                                    icon:ICON_KERV,   domain:1, sub_:4, squad:0 },
-    { key:'reporting', name:'Reporting & Analytics', sub:'',                                    icon:ICON_CHART,  domain:1, sub_:0, squad:0 }
+    { key:'shared',    name:'Shared Services',      sub:'Compliance, Security, IT and DevOps', icon:ICON_SHIELD, domsub:1, squad:0 },
+    { key:'api',       name:'API Suite',             sub:'Content, Live, Commerce, etc',        icon:ICON_SERVER, domsub:3, squad:0 },
+    { key:'platform',  name:'KERV Platform',         sub:'',                                    icon:ICON_KERV,   domsub:5, squad:0 },
+    { key:'reporting', name:'Reporting & Analytics', sub:'',                                    icon:ICON_CHART,  domsub:1, squad:0 }
   ];
 
   function panelHtml(title, headerClass) {
@@ -182,11 +187,8 @@
       +   '<div class="section-header ' + headerClass + '">' + title + '</div>'
       +   '<div class="bc-label">Bounded Contexts</div>'
       +   '<div class="grid" style="padding:10px 12px 0">' + '<div></div>' + bcCells + '</div>'
-      +   '<div class="grid row-domain">'
-      +     '<div class="glabel">Domain</div>' + iconRow('domain')
-      +   '</div>'
-      +   '<div class="grid row-subdomain">'
-      +     '<div class="glabel">Subdomain</div>' + iconRow('sub_')
+      +   '<div class="grid row-domsub">'
+      +     '<div class="glabel">Domain / Subdomain</div>' + iconRow('domsub')
       +   '</div>'
       +   '<div class="grid row-squad">'
       +     '<div class="glabel">Squads</div>' + iconRow('squad')
