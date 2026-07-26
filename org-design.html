@@ -73,6 +73,8 @@
     border-radius:10px;
     padding:10px 12px;
     height:100%;
+    display:flex;
+    flex-direction:column;
   }
   .bc-info-label{
     font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;
@@ -81,7 +83,7 @@
   .bc-info-body{display:flex;align-items:flex-start;gap:9px}
   .bc-info-title{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.3}
   .bc-info-sub{font-size:10.5px;font-weight:400;color:var(--muted);margin-top:2px;line-height:1.35;display:block}
-  .bc-info-divider{height:1px;background:var(--border);margin:9px 0}
+  .bc-info-divider{height:1px;background:var(--border);margin:auto 0 9px}
   .bc-info-user{display:flex;justify-content:center}
   .bc-info-user svg{width:16px;height:16px;color:var(--muted)}
 
@@ -114,6 +116,8 @@
     flex:1 1 0;
     min-width:0;
     position:relative;
+    display:flex;
+    flex-direction:column;
   }
   .domain-label{
     font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
@@ -122,7 +126,7 @@
   .domain-title{font-size:9.5px;font-weight:600;color:var(--text);line-height:1.25;margin-top:1px}
 
   /* domain-owner icon + vertical spine reaching down into the Squads swimlane */
-  .domain-divider{height:1px;background:var(--border);margin:6px 0}
+  .domain-divider{height:1px;background:var(--border);margin:auto 0 6px}
   .domain-icon{display:flex;justify-content:center}
   .domain-icon svg, .spine-icon svg{width:16px;height:16px;color:var(--muted)}
   .squad-spine{
