@@ -5,6 +5,7 @@
   ],
   "rewrites": [
     { "source": "/dev-specs", "destination": "/dev-specs.html" },
+    { "source": "/org-design", "destination": "/org-design.html" },
     { "source": "/((?!thumbnails|css|js|api|public|.*\\.\\w+$).*)", "destination": "/index.html" }
   ]
 }
