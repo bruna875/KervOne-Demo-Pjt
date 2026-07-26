@@ -199,7 +199,7 @@
         { title:'Core and Publisher', spine:1 },
         { title:'Ad Operations', rowIcons:2 }
       ] },
-    { key:'reporting', name:'Research & Data',       sub:'',                                    icon:ICON_CHART,  domains:[{ title:'Research & Data' }] }
+    { key:'reporting', name:'Research & Data',       sub:'',                                    icon:ICON_CHART,  domains:[{ title:'Data' }] }
   ];
 
   var LOREM = 'Lorem ipsum dolor sit amet';
@@ -277,7 +277,8 @@
     panelHtml('Product', 'section-header--product', ['shared'])
     + '<div class="divider"></div>'
     + panelHtml('Technology', 'section-header--technology', [], {
-        api: [{ title:'Content and Live', spine:3 }, { title:'Commerce', spine:1 }]
+        api: [{ title:'Content and Live', spine:3 }, { title:'Commerce', spine:1 }],
+        reporting: [{ title:'R&D', spine:2 }, { title:'Data', spine:3 }]
       });
 </script>
 
