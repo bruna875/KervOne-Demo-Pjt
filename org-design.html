@@ -82,22 +82,6 @@
   .bc-info-title{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.3}
   .bc-info-sub{font-size:10.5px;font-weight:400;color:var(--muted);margin-top:2px;line-height:1.35;display:block}
 
-  /* bounded-context icon card row */
-  .bc-cell{padding:6px 8px 10px}
-  .bc-card{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:10px;
-    padding:10px 12px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:8px;
-    height:100%;
-  }
-  .bc-user{display:flex;justify-content:center}
-  .bc-user svg{width:18px;height:18px}
-  .bc-divider{height:1px;align-self:stretch;background:var(--border)}
   .bc-icon{
     width:30px;height:30px;border-radius:8px;flex-shrink:0;
     display:flex;align-items:center;justify-content:center;
@@ -111,8 +95,27 @@
     display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;
     gap:12px;padding:14px 10px;
   }
-  .row-domsub .row-cell, .row-domsub .glabel{height:170px}
+  .row-domsub .row-cell, .row-domsub .glabel{min-height:80px}
   .row-squad  .row-cell, .row-squad  .glabel{height:220px}
+
+  /* compact domain cards — same family as bc-info-card, one hierarchy level down */
+  .row-domsub .row-cell{
+    display:flex;flex-wrap:nowrap;align-content:stretch;justify-content:flex-start;
+    align-items:stretch;gap:6px;padding:10px;
+  }
+  .domain-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:7px;
+    padding:6px 7px;
+    flex:1 1 0;
+    min-width:0;
+  }
+  .domain-label{
+    font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
+    color:var(--faint);display:block;
+  }
+  .domain-title{font-size:9.5px;font-weight:600;color:var(--text);line-height:1.25;margin-top:1px}
 
   .row-domsub .row-cell, .row-domsub .glabel{border-top:1px solid var(--border-md)}
   .row-squad  .row-cell, .row-squad  .glabel{border-top:1px solid var(--border-md)}
@@ -152,21 +155,16 @@
     + '</svg>';
   var ICON_KERV = '<img src="/kerv-one-favicon.png" alt=""/>';
 
-  var ICON_USER =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-    + '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'
-    + '</svg>';
-
   var COLUMNS = [
-    { key:'shared',    name:'Shared Services',      sub:'Compliance, Security, IT and DevOps', icon:ICON_SHIELD, domsub:1, squad:0 },
-    { key:'api',       name:'API Suite',             sub:'Content, Live, Commerce, etc',        icon:ICON_SERVER, domsub:3, squad:0 },
-    { key:'platform',  name:'KERV Platform',         sub:'',                                    icon:ICON_KERV,   domsub:5, squad:0 },
-    { key:'reporting', name:'Reporting & Analytics', sub:'',                                    icon:ICON_CHART,  domsub:1, squad:0 }
+    { key:'shared',    name:'Shared Services',      sub:'Compliance, Security, IT and DevOps', icon:ICON_SHIELD, domains:['Security, Compliance e DevOps', 'IT Support'] },
+    { key:'api',       name:'API Suite',             sub:'Content, Live, Commerce, etc',        icon:ICON_SERVER, domains:['Lorem Ipsum'] },
+    { key:'platform',  name:'KERV Platform',         sub:'',                                    icon:ICON_KERV,   domains:['Lorem Ipsum', 'Lorem Ipsum', 'Lorem Ipsum'] },
+    { key:'reporting', name:'Reporting & Analytics', sub:'',                                    icon:ICON_CHART,  domains:['Lorem Ipsum'] }
   ];
 
   var LOREM = 'Lorem ipsum dolor sit amet';
 
-  function panelHtml(title, headerClass, userColor) {
+  function panelHtml(title, headerClass) {
     var infoCells = COLUMNS.map(function(c) {
       return '<div class="bc-info-cell col-' + c.key + '">'
         + '<div class="bc-info-card">'
@@ -181,13 +179,14 @@
         + '</div>';
     }).join('');
 
-    var bcCells = COLUMNS.map(function(c) {
-      return '<div class="bc-cell col-' + c.key + '">'
-        + '<div class="bc-card">'
-        +   '<div class="bc-user" style="color:' + userColor + '">' + ICON_USER + '</div>'
-        +   '<div class="bc-divider"></div>'
-        + '</div>'
-        + '</div>';
+    var domainCells = COLUMNS.map(function(c) {
+      var cards = c.domains.map(function(d) {
+        return '<div class="domain-card">'
+          + '<span class="domain-label">Domain</span>'
+          + '<div class="domain-title">' + d + '</div>'
+          + '</div>';
+      }).join('');
+      return '<div class="row-cell col-' + c.key + '">' + cards + '</div>';
     }).join('');
 
     function emptyRow() {
@@ -200,9 +199,8 @@
       + '<div class="section-card">'
       +   '<div class="section-header ' + headerClass + '">' + title + '</div>'
       +   '<div class="grid">' + '<div></div>' + infoCells + '</div>'
-      +   '<div class="grid">' + '<div></div>' + bcCells + '</div>'
       +   '<div class="grid row-domsub">'
-      +     '<div class="glabel">Domain / Subdomain</div>' + emptyRow()
+      +     '<div class="glabel">Domain / Subdomain</div>' + domainCells
       +   '</div>'
       +   '<div class="grid row-squad">'
       +     '<div class="glabel">Squads</div>' + emptyRow()
@@ -212,9 +210,9 @@
   }
 
   document.getElementById('chartsWrap').innerHTML =
-    panelHtml('Product', 'section-header--product', 'var(--accent)')
+    panelHtml('Product', 'section-header--product')
     + '<div class="divider"></div>'
-    + panelHtml('Technology', 'section-header--technology', 'var(--secondary)');
+    + panelHtml('Technology', 'section-header--technology');
 </script>
 
 </body>
