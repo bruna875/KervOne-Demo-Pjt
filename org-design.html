@@ -194,8 +194,9 @@
 
   var LOREM = 'Lorem ipsum dolor sit amet';
 
-  function panelHtml(title, headerClass, hiddenKeys) {
+  function panelHtml(title, headerClass, hiddenKeys, domainOverrides) {
     hiddenKeys = hiddenKeys || [];
+    domainOverrides = domainOverrides || {};
     var infoCells = COLUMNS.map(function(c) {
       return '<div class="bc-info-cell col-' + c.key + '">'
         + '<div class="bc-info-card">'
@@ -216,7 +217,8 @@
       if (hiddenKeys.indexOf(c.key) !== -1) {
         return '<div class="row-cell col-' + c.key + '"></div>';
       }
-      var cards = c.domains.map(function(d) {
+      var domains = domainOverrides[c.key] || c.domains;
+      var cards = domains.map(function(d) {
         var spineHtml = '';
         if (d.spine > 1) {
           var extraIcons = '';
@@ -256,7 +258,9 @@
   document.getElementById('chartsWrap').innerHTML =
     panelHtml('Product', 'section-header--product', ['shared'])
     + '<div class="divider"></div>'
-    + panelHtml('Technology', 'section-header--technology');
+    + panelHtml('Technology', 'section-header--technology', [], {
+        api: [{ title:'Content and Live', spine:3 }, { title:'Commerce', spine:1 }]
+      });
 </script>
 
 </body>
