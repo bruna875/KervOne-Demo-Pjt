@@ -194,7 +194,7 @@
 
   var LOREM = 'Lorem ipsum dolor sit amet';
 
-  function panelHtml(title, headerClass) {
+  function panelHtml(title, headerClass, showDomains) {
     var infoCells = COLUMNS.map(function(c) {
       return '<div class="bc-info-cell col-' + c.key + '">'
         + '<div class="bc-info-card">'
@@ -240,7 +240,7 @@
       +   '<div class="section-header ' + headerClass + '">' + title + '</div>'
       +   '<div class="grid">' + '<div></div>' + infoCells + '</div>'
       +   '<div class="grid row-domsub">'
-      +     '<div class="glabel">Domain / Subdomain</div>' + domainCells
+      +     '<div class="glabel">Domain / Subdomain</div>' + (showDomains ? domainCells : emptyRow())
       +   '</div>'
       +   '<div class="grid row-squad">'
       +     '<div class="glabel">Squads</div>' + emptyRow()
@@ -250,9 +250,9 @@
   }
 
   document.getElementById('chartsWrap').innerHTML =
-    panelHtml('Product', 'section-header--product')
+    panelHtml('Product', 'section-header--product', false)
     + '<div class="divider"></div>'
-    + panelHtml('Technology', 'section-header--technology');
+    + panelHtml('Technology', 'section-header--technology', true);
 </script>
 
 </body>
